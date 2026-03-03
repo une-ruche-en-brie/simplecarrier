@@ -1,0 +1,35 @@
+{
+  "name": "prestashop/mondialrelay",
+  "description": "",
+  "config": {
+    "vendor-dir": "vendor",
+    "preferred-install": "dist",
+    "optimize-autoloader": true,
+    "prepend-autoloader": false,
+    "platform": {
+        "php": "8.0"
+    }
+  },
+  "require": {
+    "php": ">=8.0",
+    "prestashop/prestashop-accounts-installer": "^1.0",
+    "prestashop/module-lib-service-container": "^2.0",
+    "prestashop/module-lib-mbo-installer": "^3.0",
+    "symfony/http-client": "^5.4",
+    "segmentio/analytics-php": "^3.8"
+  },
+  "autoload": {
+    "classmap": [
+      "mondialrelay.php"
+    ],
+    "psr-4": {
+      "MondialrelayClasslib\\": "vendor/totpsclasslib/src/",
+      "MondialRelay\\MondialRelay\\": "src/"
+    }
+  },
+  "scripts": {
+    "pre-autoload-dump": "if [ ${TOTPSCLASSLIB_DEV_PATH} ]; then php ${TOTPSCLASSLIB_DEV_PATH}/classlib/refresh.php .; fi"
+  },
+  "author": "PrestaShop",
+  "license": "MIT"
+}

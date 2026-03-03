@@ -1,0 +1,11 @@
+/nbproject
+node_modules/
+views/**/*.LICENSE
+/202/build
+.idea
+yarn.lock
+package-lock.json
+/logs/
+config_fr.xml
+config.xml
+/vendor/.htaccess
