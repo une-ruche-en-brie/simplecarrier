@@ -1,11 +1,14 @@
 <?php
-/**
- * NOTICE OF LICENSE
+/*
+ * This file is part of Simple Carrier module
  *
- * @author Mondial Relay <offrestart@mondialrelay.fr>
- * @copyright Copyright (c) Mondial Relay
- * @license http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * Copyright(c) Nicolas Roudaire  https://www.une-ruche-en-brie.fr/
+ * Licensed under the OSL version 3.0 license.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
+
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -16,7 +19,7 @@ require_once _PS_MODULE_DIR_ . '/mondialrelay/classes/MondialrelayTools.php';
 /**
  * Note : Most of this file was copied to
  * AdminMondialrelayAdvancedSettingsController because we couldn't inherit from
- * it
+ * it.
  */
 abstract class AdminMondialrelayController extends ModuleAdminController
 {
@@ -34,8 +37,6 @@ abstract class AdminMondialrelayController extends ModuleAdminController
     {
         parent::init();
 
-        $this->initializePsAccounts();
-
         $this->context->smarty->assign([
             'module_path' => $this->module->getPathUri(),
             'with_mondialrelay_header' => $this->with_mondialrelay_header,
@@ -48,75 +49,6 @@ abstract class AdminMondialrelayController extends ModuleAdminController
             'logs_link' => $this->context->link->getAdminLink('AdminMondialrelayProcessLogger'),
             'account_settings_link' => $this->context->link->getAdminLink('AdminMondialrelayAccountSettings'),
         ]);
-    }
-
-    private function initializePsAccounts()
-    {
-        if (version_compare(_PS_VERSION_, '1.7', '>')) {
-            $mboInstaller = new \Prestashop\ModuleLibMboInstaller\DependencyBuilder($this->module);
-        
-            if (!$mboInstaller->areDependenciesMet())
-            {
-                $dependencies = $mboInstaller->handleDependencies();
-                $this->context->smarty->assign('dependencies', $dependencies);
-                $this->content .= $this->createTemplate('dependency_builder.tpl')->fetch();
-                
-                return;
-            }
-        }
-
-        $accountsService = null;
-        try {
-            /** @var \PrestaShop\PsAccountsInstaller\Installer\Facade\PsAccounts $psAccountsFacade */
-            $psAccountsFacade = $this->module->getService('mondialrelay.ps_accounts_facade');
-            /** @var \PrestaShop\PsAccountsInstaller\Installer\Presenter\InstallerPresenter $psAccountsPresenter */
-            $psAccountsPresenter = $psAccountsFacade->getPsAccountsPresenter();
-            // @phpstan-ignore-next-line
-            $contextPsAccounts = $psAccountsPresenter->present($this->module->name);
-            $accountsService = $psAccountsFacade->getPsAccountsService();
-        } catch (\PrestaShop\PsAccountsInstaller\Installer\Exception\ModuleNotInstalledException $e) {
-            $this->errors[] = $this->module->l('Prestashop Account Module is not installed', 'AdminMondialrelayController');
-            return;
-        } catch (\Symfony\Component\DependencyInjection\Exception\RuntimeException $e) {
-	        if (version_compare(_PS_VERSION_, '1.7.3.1', '<')) {
-	            $this->warnings[] = $this->module->l('Prestashop Account Module is not compatible with this module', 'AdminMondialrelayController');
-	        } else {
-	            $this->errors[] = $e->getMessage();
-	        }
-            return;
-        } catch (Exception $e) {
-            $this->errors[] = $e->getMessage();
-            return;
-        }
-
-        try {
-            Media::addJsDef([
-                'contextPsAccounts' => $contextPsAccounts,
-            ]);
-
-            // Assigner le CDN des comptes PrestaShop à Smarty
-            $this->context->smarty->assign('urlAccountsCdn', $accountsService->getAccountsCdn());
-        } catch (Exception $e) {
-            $this->errors[] = $e->getMessage();
-        }
-
-        $moduleManager = \PrestaShop\PrestaShop\Core\Addon\Module\ModuleManagerBuilder::getInstance()->build();
-
-        if ($moduleManager->isInstalled("ps_eventbus")) {
-            $eventbusModule =  \Module::getInstanceByName("ps_eventbus");
-            if (version_compare($eventbusModule->version, '1.9.0', '>=')) {
-
-                $eventbusPresenterService = $eventbusModule->getService('PrestaShop\Module\PsEventbus\Service\PresenterService');
-
-                $this->context->smarty->assign('urlCloudsync', "https://assets.prestashop3.com/ext/cloudsync-merchant-sync-consent/latest/cloudsync-cdc.js");
-
-                Media::addJsDef([
-                    'contextPsEventbus' => $eventbusPresenterService->expose($this->module, ['orders', 'carriers'])
-                ]);
-            } else {
-                $this->context->smarty->assign('urlCloudsync', '');
-            }
-        }
     }
 
     /**
@@ -142,6 +74,7 @@ abstract class AdminMondialrelayController extends ModuleAdminController
 
     /**
      * No action will ever be processed until both SOAP and cURL are installed.
+     *
      * @see AdminController::postProcess()
      */
     public function postProcess()
@@ -182,10 +115,12 @@ abstract class AdminMondialrelayController extends ModuleAdminController
     }
 
     /**
-     * We also want to check if this abstract controller has a specific template
+     * We also want to check if this abstract controller has a specific template.
+     *
      * @see parent::createTemplate()
      *
      * @param string $tpl_name Template filename
+     *
      * @return Smarty_Internal_Template
      */
     public function createTemplate($tpl_name)
@@ -203,7 +138,7 @@ abstract class AdminMondialrelayController extends ModuleAdminController
      *
      * @param string $filter_key
      * @param string $value
-     * @param string $force table name (if don't send table, list id is empty, when we call from other controller)
+     * @param string $force      table name (if don't send table, list id is empty, when we call from other controller)
      */
     public function setDefaultFilter($filter_key, $value, $force = '')
     {
@@ -215,20 +150,17 @@ abstract class AdminMondialrelayController extends ModuleAdminController
     }
 
     /**
-     * function getCookieFilterPrefix doesn't exist on early versions of prestashop 1.6.1.*
+     * function getCookieFilterPrefix doesn't exist on early versions of prestashop 1.6.1.*.
      */
     protected function getPrefix()
     {
         if (method_exists($this, 'getCookieFilterPrefix')) {
             return $this->getCookieFilterPrefix();
-        } else {
-            return str_replace(['admin', 'controller'], '', Tools::strtolower(get_class($this)));
         }
+
+        return str_replace(['admin', 'controller'], '', Tools::strtolower(get_class($this)));
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function display()
     {
         if (version_compare(phpversion(), '7.2', '>=')
@@ -236,6 +168,7 @@ abstract class AdminMondialrelayController extends ModuleAdminController
             && $this->layout == 'layout-ajax.tpl') {
             $this->layout = $this->getTemplatePath() . 'mondialrelay/layout-ajax.tpl';
         }
+
         return parent::display();
     }
 }

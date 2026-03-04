@@ -1,0 +1,21 @@
+includes:
+  - phpstan-baseline.neon
+
+parameters:
+  level: 1
+
+  bootstrapFiles:
+    - phpstan.bootstrap
+
+  paths:
+    - mondialrelay.php
+    - src
+    - classes
+    - controllers
+
+
+  scanDirectories:
+    - ../PrestaShop
+
+  reportUnmatchedIgnoredErrors: true
+

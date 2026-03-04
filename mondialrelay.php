@@ -1,24 +1,21 @@
 <?php
-/**
- * NOTICE OF LICENSE
+/*
+ * This file is part of Simple Carrier module
  *
- * @author Mondial Relay <offrestart@mondialrelay.fr>
- * @copyright Copyright (c) Mondial Relay
- * @license http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * Copyright(c) Nicolas Roudaire  https://www.une-ruche-en-brie.fr/
+ * Licensed under the OSL version 3.0 license.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
+
 if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-$autoloadPath = __DIR__ . '/vendor/autoload.php';
+require_once dirname(__FILE__) . '/vendor/autoload.php';
 
-if (file_exists($autoloadPath)) {
-    require_once $autoloadPath;
-}
-
-require_once _PS_MODULE_DIR_ . '/mondialrelay/classes/MondialrelayTools.php';
-require_once _PS_MODULE_DIR_ . '/mondialrelay/classes/MondialrelayCarrierMethod.php';
-require_once _PS_MODULE_DIR_ . '/mondialrelay/classes/MondialrelaySelectedRelay.php';
+use MondialrelayClasslib\Module;
 
 /*
  * We can't use "use" statements because PS 1.6 can't parse the module file if we do
@@ -28,76 +25,76 @@ require_once _PS_MODULE_DIR_ . '/mondialrelay/classes/MondialrelaySelectedRelay.
  * use MondialrelayClasslib\Extensions\ProcessLogger\ProcessLoggerExtension
  * use MondialrelayClasslib\Extensions\ProcessMonitor\ProcessMonitorExtension
  */
-class Mondialrelay extends MondialrelayClasslib\Module
+class MondialRelay extends Module
 {
+    private const MODULE_VERSION = '4.1.1';
+
     /**
-     * Configuration key; Webservice information; should be provided by Mondial Relay
+     * Configuration key; Webservice information; should be provided by Mondial Relay.
      */
-    const WEBSERVICE_ENSEIGNE = 'MONDIALRELAY_WEBSERVICE_ENSEIGNE';
-    const HOME_DELIVERY = 'HOME_DELIVERY';
-    const API2_CULTURE = 'API2_CULTURE';
-    const TEST_MODE = 'TEST_MODE';
-    const API2_CUSTOMER_ID = 'API2_CUSTOMER_ID';
-    const API2_PASSWORD = 'API2_PASSWORD';
-    const API2_LOGIN = 'API2_LOGIN';
-    const WEBSERVICE_BRAND_CODE = 'MONDIALRELAY_WEBSERVICE_BRAND_CODE';
-    const WEBSERVICE_KEY = 'MONDIALRELAY_WEBSERVICE_KEY';
+    public const WEBSERVICE_ENSEIGNE = 'MONDIALRELAY_WEBSERVICE_ENSEIGNE';
+    public const HOME_DELIVERY = 'HOME_DELIVERY';
+    public const API2_CULTURE = 'API2_CULTURE';
+    public const TEST_MODE = 'TEST_MODE';
+    public const API2_CUSTOMER_ID = 'API2_CUSTOMER_ID';
+    public const API2_PASSWORD = 'API2_PASSWORD';
+    public const API2_LOGIN = 'API2_LOGIN';
+    public const WEBSERVICE_BRAND_CODE = 'MONDIALRELAY_WEBSERVICE_BRAND_CODE';
+    public const WEBSERVICE_KEY = 'MONDIALRELAY_WEBSERVICE_KEY';
 
     /** @var string Configuration key; the id of the language in
      * which to generate the labels
      */
-    const LABEL_LANG = 'MONDIALRELAY_LABEL_LANG';
+    public const LABEL_LANG = 'MONDIALRELAY_LABEL_LANG';
 
     /** @var string Configuration key; a coefficient to apply to product's weight
      * when trying to calculate an order weight from
      */
-    const WEIGHT_COEFF = 'MONDIALRELAY_WEIGHT_COEFF';
+    public const WEIGHT_COEFF = 'MONDIALRELAY_WEIGHT_COEFF';
 
     /** @var string Configuration key; wether to display the Mondial Relay widget
      * with a map
      */
-    const DISPLAY_MAP = 'MONDIALRELAY_DISPLAY_MAP';
+    public const DISPLAY_MAP = 'MONDIALRELAY_DISPLAY_MAP';
 
     /** @var string Configuration key; Orders with this state will be available
      * for label generation
      */
-    const OS_DISPLAY_LABEL = 'MONDIALRELAY_OS_DISPLAY_LABEL';
+    public const OS_DISPLAY_LABEL = 'MONDIALRELAY_OS_DISPLAY_LABEL';
 
     /** @var string Configuration key; Orders will switch to this state when a
      * label has been generated
      */
-    const OS_LABEL_GENERATED = 'MONDIALRELAY_OS_LABEL_GENERATED';
+    public const OS_LABEL_GENERATED = 'MONDIALRELAY_OS_LABEL_GENERATED';
 
     /** @var string Configuration key; Orders will switch to this state once they
      * have been reported as "delivered" by Mondial Relay
      */
-    const OS_ORDER_DELIVERED = 'MONDIALRELAY_OS_ORDER_DELIVERED';
+    public const OS_ORDER_DELIVERED = 'MONDIALRELAY_OS_ORDER_DELIVERED';
 
     /** @var string Configuration key; Orders with this state will be ignored
      * by the CRON task (optional)
      */
-    const OS_CRON_IGNORE = 'MONDIALRELAY_OS_CRON_IGNORE';
+    public const OS_CRON_IGNORE = 'MONDIALRELAY_OS_CRON_IGNORE';
 
     /** @var string Configuration key; the secure key for the deprecated cron
      * task
+     *
      * @see cron.php
      * @see MondialrelayOrdersStatusUpdateModuleFrontController::checkAccess()
      */
-    const DEPRECATED_SECURE_KEY = 'MONDIAL_RELAY_SECURE_KEY';
+    public const DEPRECATED_SECURE_KEY = 'MONDIAL_RELAY_SECURE_KEY';
 
     /** @var int The minimum package weight supported by the webservice */
-    const MINIMUM_PACKAGE_WEIGHT = 15;
+    public const MINIMUM_PACKAGE_WEIGHT = 15;
 
     /** @var string The only collection mode supported by the module */
-    const COLLECTION_MODE = 'CCC';
+    public const COLLECTION_MODE = 'CCC';
 
     /*
      * Mondial Relay's domain; needed for tracking URLs and label downloads
      */
-    const URL_DOMAIN = 'https://www.mondialrelay.com';
-
-    /** Key for segmentio/analytics-php */
-    const SEGMENT_KEY = 'AgqeWVEItnROTHgQHvOKnAa3Bso7w0nj';
+    public const URL_DOMAIN = 'https://www.mondialrelay.com';
 
     public $extensions = [
         MondialrelayClasslib\Extensions\ProcessLogger\ProcessLoggerExtension::class,
@@ -242,12 +239,14 @@ class Mondialrelay extends MondialrelayClasslib\Module
         'displayAdminOrderLeft',
         'displayAdminOrder',
         'displayAdminOrderSide',
-        'actionGetOrderShipments'
+        'actionGetOrderShipments',
     ];
 
     /**
-     * Used to avoid spam or unauthorized execution of cron controller
+     * Used to avoid spam or unauthorized execution of cron controller.
+     *
      * @var string Unique token depend on _COOKIE_KEY_ which is unique to this website
+     *
      * @see Tools::encrypt()
      */
     public $secure_key;
@@ -255,7 +254,7 @@ class Mondialrelay extends MondialrelayClasslib\Module
     /**
      * List of cron tasks indexed by controller name
      * Title value must be an array indexed by iso language (en is required)
-     * Frequency value can be hourly, daily, weekly, monthly
+     * Frequency value can be hourly, daily, weekly, monthly.
      *
      * @var array
      */
@@ -263,20 +262,21 @@ class Mondialrelay extends MondialrelayClasslib\Module
 
     private $container;
 
+    private $module;
+
     public function __construct()
     {
         $this->name = 'mondialrelay';
         $this->tab = 'shipping_logistics';
-        $this->version = '4.1.0';
-        $this->installed_version = '';
+        $this->version = self::MODULE_VERSION;
         $this->bootstrap = true;
         $this->module_key = 'd7903ef40ee11ecfc77bf5ddf85a5c5b';
         $this->ps_versions_compliancy = ['min' => '8.0.0', 'max' => '9.99.99'];
-        $this->author = 'ScaleDEV';
+        $this->author = 'Nicolas ROUDAIRE <nikrou77@gmail.com>';
 
         parent::__construct();
 
-        $this->displayName = $this->l('MondialRelay - Inpost Officiel');
+        $this->displayName = $this->l('SimpleCarrier');
         $this->description = $this->l('Deliver in Points Relais');
         $this->secure_key = '1e9cf7f8a171dcda9e57953c7e7e3611';
 
@@ -300,7 +300,7 @@ class Mondialrelay extends MondialrelayClasslib\Module
         ];
 
         if ($this->container === null) {
-            $this->container = new \PrestaShop\ModuleLibServiceContainer\DependencyInjection\ServiceContainer(
+            $this->container = new PrestaShop\ModuleLibServiceContainer\DependencyInjection\ServiceContainer(
                 $this->name,
                 $this->getLocalPath()
             );
@@ -308,7 +308,7 @@ class Mondialrelay extends MondialrelayClasslib\Module
     }
 
     /**
-     * Make our checks, and install with classlib
+     * Make our checks, and install with classlib.
      */
     public function install()
     {
@@ -316,6 +316,7 @@ class Mondialrelay extends MondialrelayClasslib\Module
             $this->_errors[] = Tools::displayError(
                 $this->l('SOAP and cURL should be installed on your server.')
             );
+
             return false;
         }
 
@@ -332,7 +333,6 @@ class Mondialrelay extends MondialrelayClasslib\Module
 
         $this->getService('mondialrelay.ps_accounts_installer')->install();
 
-
         // Check if AdminController is installed
         if (!$this->isAdminControllerInstalled('AdminMondialrelayHelp')) {
             $installer = new MondialrelayClasslib\Install\ModuleInstaller($this);
@@ -344,22 +344,18 @@ class Mondialrelay extends MondialrelayClasslib\Module
                 $this->module->_errors[] = Tools::displayError(
                     $this->module->l('The AdminMondialrelayHelp controller could not be installed correctly.')
                 );
+
                 return false;
             }
         }
-
-        // Segment integration
-        $this->segmentTrack('Module Installed');
 
         return true;
     }
 
     /**
-     * Retrieve the service
+     * Retrieve the service.
      *
      * @param string $serviceName
-     *
-     * @return mixed
      */
     public function getService($serviceName)
     {
@@ -367,7 +363,7 @@ class Mondialrelay extends MondialrelayClasslib\Module
     }
 
     /**
-     * Uninstall with classlib
+     * Uninstall with classlib.
      */
     public function uninstall()
     {
@@ -386,29 +382,20 @@ class Mondialrelay extends MondialrelayClasslib\Module
             return false;
         }
 
-        $this->segmentTrack('Module Uninstalled');
-
         $installer = new MondialrelayClasslib\Install\ModuleInstaller($this);
+
         return $installer->uninstallConfiguration() && $installer->uninstallModuleAdminControllers();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function enable($force_all = false)
     {
         if (!parent::enable($force_all)) {
             return false;
         }
 
-        $this->segmentTrack('Module Enabled');
-
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function disable($force_all = false)
     {
         if (!parent::disable($force_all)) {
@@ -423,13 +410,11 @@ class Mondialrelay extends MondialrelayClasslib\Module
             $id_shop_list = Shop::getContextListShopID();
         }
 
-        $this->segmentTrack('Module Disabled');
-
         return MondialrelayCarrierMethod::removeNativeCarriersFromShops($id_shop_list);
     }
 
     /**
-     * Redirect to our AdminControllers
+     * Redirect to our AdminControllers.
      */
     public function getContent()
     {
@@ -443,6 +428,7 @@ class Mondialrelay extends MondialrelayClasslib\Module
      * from the module's controller.
      *
      * @param array $params
+     *
      * @return void
      */
     public function hookActionAdminCarriersControllerDeleteAfter($params)
@@ -478,7 +464,7 @@ class Mondialrelay extends MondialrelayClasslib\Module
     }
 
     /**
-     * For < 1.7.7
+     * For < 1.7.7.
      */
     public function hookdisplayAdminOrderSide($params)
     {
@@ -528,7 +514,7 @@ class Mondialrelay extends MondialrelayClasslib\Module
     }
 
     /**
-     * RELAY SELECTION DISPLAY
+     * RELAY SELECTION DISPLAY.
      *
      * Includes javascript used "globally" in the checkout process; this allows
      * to bind events to the form even if our carrier wasn't selected yet.
@@ -541,7 +527,9 @@ class Mondialrelay extends MondialrelayClasslib\Module
      * when this hook is triggered.
      *
      * @see self::hookDisplayBeforeCarrier()
+     *
      * @param type $params
+     *
      * @return string
      */
     public function hookActionFrontControllerSetMedia($params)
@@ -604,6 +592,7 @@ class Mondialrelay extends MondialrelayClasslib\Module
                 function ($v) use (&$real_carriers_ids) {
                     $keys = explode(',', $v);
                     $real_carriers_ids[$keys[0]] = $v;
+
                     return $keys[0];
                 },
                 array_keys($deliveryOptionsList[key($deliveryOptionsList)])
@@ -672,9 +661,10 @@ class Mondialrelay extends MondialrelayClasslib\Module
 
     /**
      * Used to display the widget area on PS 17; triggered each time the
-     * delivery option changes, unless stopped (see checkout-17.js)
+     * delivery option changes, unless stopped (see checkout-17.js).
      *
      * @param array $params
+     *
      * @return string
      */
     public function hookDisplayAfterCarrier($params)
@@ -688,7 +678,9 @@ class Mondialrelay extends MondialrelayClasslib\Module
      * Used on PS 16 with 5-steps checkout.
      *
      * @see self::hookActionFrontControllerSetMedia()
+     *
      * @param array $params
+     *
      * @return string
      */
     public function hookDisplayBeforeCarrier($params)
@@ -735,9 +727,11 @@ class Mondialrelay extends MondialrelayClasslib\Module
      * This is where we'll set up the more "specific" JS variables.
      *
      * Never triggered natively in PS17;
+     *
      * @see self::hookDisplayBeforeCarrier()
      *
      * @param array $params
+     *
      * @return string
      */
     public function hookDisplayCarrierList($params)
@@ -849,6 +843,7 @@ class Mondialrelay extends MondialrelayClasslib\Module
             function ($v) use (&$real_carriers_ids) {
                 $keys = explode(',', $v);
                 $real_carriers_ids[$keys[0]] = $v;
+
                 return $keys[0];
             },
             array_keys($deliveryOptionsList[$address->id])
@@ -890,7 +885,7 @@ class Mondialrelay extends MondialrelayClasslib\Module
             $mondialRelayLangIso = $this->context->language->language_code;
         }
 
-        $mondialRelayCountry = array('FR', 'ES', 'BE', 'NL', 'LU', 'DE', 'AT', 'PT', 'PL', 'IT');
+        $mondialRelayCountry = ['FR', 'ES', 'BE', 'NL', 'LU', 'DE', 'AT', 'PT', 'PL', 'IT'];
 
         if (in_array(Country::getIsoById($address->id_country), $mondialRelayCountry)) {
             $country = Country::getIsoById($address->id_country);
@@ -935,6 +930,7 @@ class Mondialrelay extends MondialrelayClasslib\Module
             // PS16
             $themeName = $this->context->shop->theme_name;
         }
+
         return $this->context->smarty->createTemplate(
             $this->getTemplatePath('checkout/widget-area.tpl'),
             $scope,
@@ -944,8 +940,10 @@ class Mondialrelay extends MondialrelayClasslib\Module
 
     /**
      * We want prevent the user from modifying an address if it's a relay
-     * address
+     * address.
+     *
      * @see self::setAddressError()
+     *
      * @param type $params
      */
     public function hookActionObjectAddressUpdateBefore($params)
@@ -962,8 +960,10 @@ class Mondialrelay extends MondialrelayClasslib\Module
 
     /**
      * We want prevent the user from deleting an address if it's a relay
-     * address
+     * address.
+     *
      * @see self::setAddressError()
+     *
      * @param type $params
      */
     public function hookActionObjectAddressDeleteBefore($params)
@@ -1002,6 +1002,7 @@ class Mondialrelay extends MondialrelayClasslib\Module
             || (Configuration::get(MondialRelay::HOME_DELIVERY) && !MondialRelayTools::checkWebserviceConfigurationApi2())
         ) {
             $this->context->controller->errors[] = $this->l('This carrier has not been configured yet; please contact the merchant.');
+
             return false;
         }
 
@@ -1090,6 +1091,7 @@ class Mondialrelay extends MondialrelayClasslib\Module
             && (!Validate::isLoadedObject($selectedRelay) || !$selectedRelay->selected_relay_num)
         ) {
             $this->context->controller->errors[] = $this->l('Please select a Point Relais®.');
+
             return false;
         }
 
@@ -1108,6 +1110,7 @@ class Mondialrelay extends MondialrelayClasslib\Module
      * There's no way to block the payment methods when not using AJAX calls...
      *
      * @param type $params
+     *
      * @return bool
      */
     public function hookActionBeforeAjaxDieOrderOpcControllerinit($params)
@@ -1143,7 +1146,7 @@ class Mondialrelay extends MondialrelayClasslib\Module
     }
 
     /**
-     * Carrier selection validation for PS 1.7.2+
+     * Carrier selection validation for PS 1.7.2+.
      *
      * The module doesn't support 1.7.0-1.7.2, and those PS version don't
      * feature this hook. This means that relay validation depends entirely on
@@ -1151,6 +1154,7 @@ class Mondialrelay extends MondialrelayClasslib\Module
      * We're using this hook because actionCarrierProcess doesn't allow a clean
      * validation and errors display.
      * In case on js error, we add one more check here. You'll see this error only if alert didn't work in FO.
+     *
      * @param array $params
      */
     public function hookActionValidateStepComplete($params)
@@ -1168,6 +1172,7 @@ class Mondialrelay extends MondialrelayClasslib\Module
         ) {
             $params['completed'] = false;
             $this->context->controller->errors[] = $this->l('For using the delivery to Points Relais® by Mondial Relay carrier, you should select a Point Relais®. If you don\'t see a widget with Points Relais®, please refresh the page .');
+
             return false;
         }
     }
@@ -1198,6 +1203,7 @@ class Mondialrelay extends MondialrelayClasslib\Module
                     $address_relay->delete();
                 }
             }
+
             return true;
         }
 
@@ -1293,7 +1299,7 @@ class Mondialrelay extends MondialrelayClasslib\Module
                     /** @var MondialrelaySelectedRelay */
                     $selectedRelay = $actionsResult['selectedRelay'];
                 }
-            } elseif ($carrierMethod->delivery_mode == '24R' && Context::getContext()->controller_name = "Admin") {
+            } elseif ($carrierMethod->delivery_mode == '24R' && Context::getContext()->controller_name = 'Admin') {
                 $selectedRelay = new MondialrelaySelectedRelay();
                 $selectedRelay->id_address_delivery = $cart->id_address_delivery;
                 $selectedRelay->id_customer = $cart->id_customer;
@@ -1346,6 +1352,7 @@ class Mondialrelay extends MondialrelayClasslib\Module
         }
         if ($hasError) {
             MondialrelayClasslib\Extensions\ProcessLogger\ProcessLoggerHandler::closeLogger();
+
             return false;
         }
 
@@ -1388,7 +1395,7 @@ class Mondialrelay extends MondialrelayClasslib\Module
     }
 
     /**
-     * BACK OFFICE
+     * BACK OFFICE.
      */
     public function hookActionAdminControllerSetMedia($params)
     {
@@ -1443,10 +1450,12 @@ class Mondialrelay extends MondialrelayClasslib\Module
 
         if (!Validate::isLoadedObject($selectedRelay)) {
             $this->context->controller->errors[] = $this->l('Unexpected error occurred. There is no Mondial Relay carrier expedition information.');
+
             return;
         }
         if ($carrierMethod->needsRelay() && !$selectedRelay->selected_relay_num) {
             $this->context->controller->errors[] = $this->l('This order is using a Mondial Relay carrier, but no relay is selected.');
+
             return;
         }
 
@@ -1458,14 +1467,15 @@ class Mondialrelay extends MondialrelayClasslib\Module
                     'selectedRelay' => $selectedRelay,
                     'tracking_url' => $this->getCustomerTrackingUrl($selectedRelay->expedition_num),
                 ]);
+
                 return $template->fetch();
-            } else {
-                $this->smarty->assign([
-                    'selectedRelay' => $selectedRelay,
-                    'tracking_url' => $this->getCustomerTrackingUrl($selectedRelay->expedition_num),
-                ]);
-                return $this->display(__FILE__, 'views/templates/front/hook/displayOrderDetails.tpl');
             }
+            $this->smarty->assign([
+                'selectedRelay' => $selectedRelay,
+                'tracking_url' => $this->getCustomerTrackingUrl($selectedRelay->expedition_num),
+            ]);
+
+            return $this->display(__FILE__, 'views/templates/front/hook/displayOrderDetails.tpl');
         }
     }
 
@@ -1475,6 +1485,7 @@ class Mondialrelay extends MondialrelayClasslib\Module
      * module managing the carrier.
      *
      * @param int $id_cart
+     *
      * @see AdminOrdersController
      */
     public function displayInfoByCart($id_cart)
@@ -1497,6 +1508,7 @@ class Mondialrelay extends MondialrelayClasslib\Module
 
         if (!Validate::isLoadedObject($selectedRelay)) {
             $this->context->controller->errors[] = $this->l('Unexpected error occurred. There is no Mondial Relay carrier expedition information.');
+
             return;
         }
 
@@ -1529,7 +1541,7 @@ class Mondialrelay extends MondialrelayClasslib\Module
 
     /**
      * Checks and adds an error if we're trying to update or delete an address
-     * representing a Point Relais®
+     * representing a Point Relais®.
      */
     protected function setAddressError($controller_redirect = false)
     {
@@ -1603,6 +1615,7 @@ class Mondialrelay extends MondialrelayClasslib\Module
      * @param type $string
      * @param type $specific
      * @param type $replacements
+     *
      * @return type
      */
     public function l($string, $specific = false, $replacements = [])
@@ -1646,7 +1659,8 @@ class Mondialrelay extends MondialrelayClasslib\Module
             '#\[a\]#',
             function ($matches) use (&$n) {
                 $r = '<a href="@href' . ($n ? '_' . $n : '') . '@" target="@target' . ($n ? '_' . $n : '') . '@">';
-                ++$n;
+                $n++;
+
                 return $r;
             },
             $string
@@ -1672,8 +1686,9 @@ class Mondialrelay extends MondialrelayClasslib\Module
      * Sets a key with a value if not already set (non-strict comparison). Used
      * for module install/upgrades.
      *
-     * @param string $key : the configuration key to set
+     * @param string $key          : the configuration key to set
      * @param string $defaultValue : the default value
+     *
      * @return void
      */
     public function setConfigurationDefault($key, $defaultValue)
@@ -1688,6 +1703,7 @@ class Mondialrelay extends MondialrelayClasslib\Module
      *
      * @param string $oldKey : the configuration key to update
      * @param string $newKey : the new configuration key
+     *
      * @return void
      */
     public function updateConfigurationKey($oldKey, $newKey)
@@ -1700,7 +1716,7 @@ class Mondialrelay extends MondialrelayClasslib\Module
     }
 
     /**
-     * Update id_address_delivery on mondial relay if address updated
+     * Update id_address_delivery on mondial relay if address updated.
      *
      * @return void
      */
@@ -1718,9 +1734,10 @@ class Mondialrelay extends MondialrelayClasslib\Module
     }
 
     /**
-     * Get tracking url for professional customer
+     * Get tracking url for professional customer.
      *
      * @param string $shipping_number : shipping_number
+     *
      * @return string
      */
     public function getTrackingUrlConnect($shipping_number)
@@ -1729,11 +1746,14 @@ class Mondialrelay extends MondialrelayClasslib\Module
     }
 
     /**
-     * Get tracking url for customer
+     * Get tracking url for customer.
      *
      * @param string $shipping_number
+     *
      * @return string
+     *
      * @author Louis Pavoine <contact@scaledev.fr>
+     *
      * @since 3.3.2
      */
     public function getCustomerTrackingUrl($shipping_number)
@@ -1749,7 +1769,7 @@ class Mondialrelay extends MondialrelayClasslib\Module
     }
 
     /**
-     * Check if AdminController is install on ps_tab
+     * Check if AdminController is install on ps_tab.
      *
      * @param string $className Name of controller
      *
@@ -1758,74 +1778,13 @@ class Mondialrelay extends MondialrelayClasslib\Module
     protected function isAdminControllerInstalled($className)
     {
         $sql = 'SELECT id_tab FROM ' . _DB_PREFIX_ . 'tab WHERE class_name = "' . pSQL($className) . '"';
+
         return (bool) Db::getInstance()->getValue($sql);
     }
 
-    /**
-     * Send event to SegmentIO.
-     *
-     * @param string $event
-     * 
-     * @return void
-     */
-    public function segmentTrack($event)
-    {
-        $properties = [
-            'shop_url'          => _PS_BASE_URL_SSL_,
-            'ps_version'        => _PS_VERSION_,
-            'php_version'       => phpversion(),
-            'module_version'    => $this->version,
-        ];
-
-        try {
-            $mrUserId1 = \Configuration::get(self::WEBSERVICE_ENSEIGNE);
-            $mrUserId2 = \Configuration::get(self::API2_CUSTOMER_ID);
-
-            $mrUserId = $mrUserId1;
-            $mrUserId = (!empty($mrUserId2) && $mrUserId2 !== false) ? $mrUserId2 : $mrUserId;
-
-            $properties = array_merge($properties, [
-                'configuration' => ['identifiant' => $mrUserId],
-            ]);
-
-            $psAccountsService = $this->getService('mondialrelay.ps_accounts_facade')->getPsAccountsService();
-            $properties = array_merge($properties, [
-                'user_id' => $psAccountsService->getUserUuid(),
-                'email'   => $psAccountsService->getEmail(),
-                'shop_id' => $psAccountsService->getShopUuid(),
-            ]);
-        } catch (\Throwable $e) {
-            if (class_exists('PrestaShopLogger')) {
-                \PrestaShopLogger::addLog($e->getMessage(), 3, null, 'mondialrelay');
-            }
-        }
-
-        try {
-            if (class_exists('\\Segment\\Segment')) {
-                \Segment\Segment::init(self::SEGMENT_KEY);
-                \Segment\Segment::track([
-                    'anonymousId' => 'mondialrelay',
-                    'event'       => $event,
-                    'properties'  => $properties,
-                ]);
-            }
-        } catch (\Throwable $e) {
-            if (class_exists('PrestaShopLogger')) {
-                \PrestaShopLogger::addLog($e->getMessage(), 3, null, 'mondialrelay');
-            }
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function runUpgradeModule()
     {
-        $upgrade = parent::runUpgradeModule();
-
-        $this->segmentTrack('Module Upgraded');
-
-        return $upgrade;
+        return parent::runUpgradeModule();
     }
 
     /**
@@ -1833,8 +1792,6 @@ class Mondialrelay extends MondialrelayClasslib\Module
      * You can use this hook to share shipment data with third party modules.
      *
      * @param array{id_order: int, id_carrier: int} $params
-     *
-     * @return array
      */
     public function hookActionGetOrderShipments(array $params): array
     {
@@ -1948,10 +1905,6 @@ class Mondialrelay extends MondialrelayClasslib\Module
 
     /**
      * Prepares the products section for the shipment payload.
-     *
-     * @param array $orderDetails
-     *
-     * @return array
      */
     protected function formatShipmentProducts(array $orderDetails): array
     {

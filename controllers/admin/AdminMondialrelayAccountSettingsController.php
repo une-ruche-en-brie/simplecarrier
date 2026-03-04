@@ -1,14 +1,13 @@
 <?php
-/**
- * NOTICE OF LICENSE
+/*
+ * This file is part of Simple Carrier module
  *
- * @author Mondial Relay <offrestart@mondialrelay.fr>
- * @copyright Copyright (c) Mondial Relay
- * @license http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * Copyright(c) Nicolas Roudaire  https://www.une-ruche-en-brie.fr/
+ * Licensed under the OSL version 3.0 license.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
-if (!defined('_PS_VERSION_')) {
-    exit;
-}
 
 require_once _PS_MODULE_DIR_ . '/mondialrelay/controllers/admin/AdminMondialrelayController.php';
 require_once _PS_MODULE_DIR_ . '/mondialrelay/classes/services/MondialrelayService.php';
@@ -61,7 +60,7 @@ class AdminMondialrelayAccountSettingsController extends AdminMondialrelayContro
     }
 
     /**
-     * Sets the fields for an "options" form
+     * Sets the fields for an "options" form.
      */
     public function initOptions()
     {
@@ -252,7 +251,6 @@ class AdminMondialrelayAccountSettingsController extends AdminMondialrelayContro
         }
 
         if (empty($this->errors)) {
-            $this->module->segmentTrack('Module Configured');
             $errors = [];
 
             if (!Tools::getValue(MondialRelay::HOME_DELIVERY)) {
@@ -310,7 +308,7 @@ class AdminMondialrelayAccountSettingsController extends AdminMondialrelayContro
     }
 
     /**
-     * Ajax call to check if the parameters are valid
+     * Ajax call to check if the parameters are valid.
      */
     public function ajaxProcessCheckConnection()
     {
@@ -336,6 +334,7 @@ class AdminMondialrelayAccountSettingsController extends AdminMondialrelayContro
 
         if (!empty($this->errors)) {
             $this->status = 'error';
+
             return false;
         }
 
@@ -347,7 +346,7 @@ class AdminMondialrelayAccountSettingsController extends AdminMondialrelayContro
         )) {
             echo json_encode([
                 'confirmations' => [
-                    $this->module->l('Connection successful !', 'AdminMondialrelayAccountSettingsController')
+                    $this->module->l('Connection successful !', 'AdminMondialrelayAccountSettingsController'),
                 ],
                 'error' => [],
             ]);
@@ -420,7 +419,7 @@ class AdminMondialrelayAccountSettingsController extends AdminMondialrelayContro
             } else {
                 echo json_encode([
                     'confirmations' => [
-                        $this->module->l('Connection successful !', 'AdminMondialrelayAccountSettingsController')
+                        $this->module->l('Connection successful !', 'AdminMondialrelayAccountSettingsController'),
                     ],
                     'error' => [],
                 ]);

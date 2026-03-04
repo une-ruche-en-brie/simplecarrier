@@ -1,0 +1,5 @@
+<?php
+
+// Mock some global constants
+define('_PS_MODULE_DIR_', __DIR__.'/..');
+define('_PS_BASE_URL_SSL_', '/');
