@@ -9,13 +9,6 @@
  * file that was distributed with this source code.
  */
 
-require_once _PS_MODULE_DIR_ . '/mondialrelay/mondialrelay.php';
-require_once _PS_MODULE_DIR_ . '/mondialrelay/classes/MondialrelayTools.php';
-
-if (!defined('_PS_VERSION_')) {
-    exit;
-}
-
 abstract class MondialrelayService
 {
     public const BASE_URL = 'https://api.mondialrelay.com/';

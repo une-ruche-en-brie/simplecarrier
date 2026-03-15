@@ -9,14 +9,6 @@
  * file that was distributed with this source code.
  */
 
-if (!defined('_PS_VERSION_')) {
-    exit;
-}
-
-require_once _PS_MODULE_DIR_ . '/mondialrelay/mondialrelay.php';
-require_once _PS_MODULE_DIR_ . '/mondialrelay/classes/MondialrelayTools.php';
-require_once _PS_MODULE_DIR_ . '/mondialrelay/controllers/admin/AdminMondialrelayLabelsGenerationController.php';
-
 use MondialrelayClasslib\Extensions\ProcessMonitor\Controllers\Admin\AdminProcessMonitorController;
 
 /**
