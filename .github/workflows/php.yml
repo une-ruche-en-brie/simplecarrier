@@ -1,0 +1,34 @@
+name: PHP
+on:
+  push:
+  pull_request:
+
+jobs:
+  phpstan:
+    permissions:
+      contents: read  # for actions/checkout to fetch code
+    name: PHP Static Analysis
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: [ '8.1', '8.2', '8.3', '8.4' ]
+      fail-fast: false
+
+    steps:
+      - name: Setup PHP, extensions and composer with shivammathur/setup-php
+        uses: shivammathur/setup-php@v2
+        with:
+          tools: composer
+          php-version: ${{ matrix.php }}
+          coverage: xdebug
+          extensions: mbstring, intl, gd, xml, dom, json, fileinfo, curl, zip, iconv, simplexml
+
+      - name: Install dependencies
+        run: |
+          composer install --ansi --prefer-dist --no-interaction --no-progress
+          rm composer.lock
+          composer config platform.php ${{ matrix.php }}
+
+      - name: Run PHPStan
+        run: composer phpstan
+

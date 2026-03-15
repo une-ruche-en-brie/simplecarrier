@@ -183,17 +183,6 @@ class MondialRelay extends Module
             'parent_class_name' => 'AdminMondialrelaySettings',
             'visible' => true,
         ],
-        [
-            'name' => [
-                'en' => 'Help',
-                'fr' => 'Aide',
-                'es' => 'Ayuda',
-                'nl' => 'Help',
-            ],
-            'class_name' => 'AdminMondialrelayHelp',
-            'parent_class_name' => 'AdminMondialrelaySettings',
-            'visible' => true,
-        ],
         // This controller doesn't have a link in the menu; it's only accessible
         // through order pages
         [
@@ -305,6 +294,20 @@ class MondialRelay extends Module
                 $this->getLocalPath()
             );
         }
+
+        $this->tabs = [
+            [
+                'name' => [
+                    'en' => 'Help',
+                    'fr' => 'Aide',
+                    'es' => 'Ayuda',
+                    'nl' => 'Help',
+                ],
+                'route_name' => 'admin_mondialrelay_help',
+                'class_name' => 'AdminMondialRelayHelp',
+                'parent_class_name' => 'AdminMondialrelaySettings',
+            ],
+        ];
     }
 
     /**
@@ -313,11 +316,7 @@ class MondialRelay extends Module
     public function install()
     {
         if (!MondialrelayTools::checkDependencies()) {
-            $this->_errors[] = Tools::displayError(
-                $this->l('SOAP and cURL should be installed on your server.')
-            );
-
-            return false;
+            throw new Exception($this->l('SOAP and cURL should be installed on your server.'));
         }
 
         if (!parent::install()) {
@@ -331,21 +330,15 @@ class MondialRelay extends Module
         $this->setConfigurationDefault(self::OS_ORDER_DELIVERED, Configuration::get('PS_OS_DELIVERED'));
         $this->setConfigurationDefault(self::LABEL_LANG, 'FR');
 
-        $this->getService('mondialrelay.ps_accounts_installer')->install();
-
         // Check if AdminController is installed
-        if (!$this->isAdminControllerInstalled('AdminMondialrelayHelp')) {
+        if (!$this->isAdminControllerInstalled('AdminMondialrelayAccountSettings')) {
             $installer = new MondialrelayClasslib\Install\ModuleInstaller($this);
             $installer->uninstallModuleAdminControllers();
             $installer->installAdminControllers();
             $installer->installObjectModels();
 
-            if (!$this->isAdminControllerInstalled('AdminMondialrelayHelp')) {
-                $this->module->_errors[] = Tools::displayError(
-                    $this->module->l('The AdminMondialrelayHelp controller could not be installed correctly.')
-                );
-
-                return false;
+            if (!$this->isAdminControllerInstalled('AdminMondialrelayAccountSettings')) {
+                throw new Exception($this->l('The AdminMondialrelayAccountSettings controller could not be installed correctly.'));
             }
         }
 
@@ -1612,11 +1605,11 @@ class MondialRelay extends Module
      * 'target' fields. The first '[a]' will use 'href' and 'target', the second
      * will use 'href_1' and 'target_1', and so on.
      *
-     * @param type $string
-     * @param type $specific
-     * @param type $replacements
+     * @param string $string
+     * @param string $specific
+     * @param string $replacements
      *
-     * @return type
+     * @return string
      */
     public function l($string, $specific = false, $replacements = [])
     {

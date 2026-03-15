@@ -1,0 +1,40 @@
+{% trans_default_domain 'Modules.Mondialrelay.Content' %}
+
+<div class="card">
+  <div>
+    <img src="{{asset('../modules/mondialrelay/views/img/logo.jpg')}}"
+      class="auto float-left mondialrelay_logo" />
+  </div>
+
+  <div class="card-body">
+    <p>
+      {{'[1] To accompany you, we\'re pulling out all the stops!  Mondial Relay - InPost, the leader in out-of-home delivery in Europe [/1]'|trans({'[1]': '<strong>', '[/1]': '</strong>'})|raw}}<br>
+      {{'Mondial Relay - InPost, everyone knows. It is parcel delivery specialist for over 25 years through its distribution solutions in Pick up Store, Lockers and European Home delivery.'|trans}}<br>
+      {{'However, it is also more than 9 European delivery countries, more than 150 000 e-merchants who trust us with their parcels, more than 45 000 Pick up points across Europe, more innovations to facilitate daily life and more convenience and security for customers at the best price.'|trans}}
+    </p>
+
+    <div class="d-none d-sm-block">
+      <p>
+        {{'Give your customers a cheap, easy, safe and convenient delivery offer :'|trans}} <br />
+        {{'[1] Good value for money [/1] : No more high parcel delivery costs! With Mondial Relay - InPost, consumers benefit from an unbeatable quality/price ratio'|trans({'[1]': '<strong>', '[/1]': '</strong>'})|raw}}<br />
+        {{'[1] Simple [/1] : we have only one idea in mind "to facilitate everyone\'s life". Sending or receiving a parcel with Mondial Relay is as easy as a smile.'|trans({'[1]': '<strong>', '[/1]': '</strong>'})|raw}}<br />
+        {{'[1] Safe and practical [/1] : Mondial Relay - InPost takes care of your shipments. Thanks to rigorous tracking, customers can follow their parcel and collect it from our Pick up point and Lockers using a PIN or QR Code.'|trans({'[1]': '<strong>', '[/1]': '</strong>'})|raw}}<br />
+      </p>
+
+      <p>
+        {{'Mondial Relay is evaluated every day by hundreds of customers thanks to the Avis Vérifiés, certified by AFNOR (French ISO organisation), which gives a score of 9.1/10'|trans}}<br />
+        <a href="https://www.mondialrelay.fr/solutionspro/decouvrez-votre-offre/" target="_blank">{{' Discover Mondial Relay offers'|trans}}</a>
+      </p>
+    </div>
+
+    <div class="d-block d-sm-none">
+      <p>
+        {{'Give your customers a cheap, easy, safe and convenient delivery offer.'|trans}}
+      </p>
+
+      <p>
+        <a href="https://www.mondialrelay.fr/solutionspro/decouvrez-votre-offre/" target="_blank">{{' Discover Mondial Relay offers'|trans}}</a>
+      </p>
+    </div>
+  </div>
+</div>

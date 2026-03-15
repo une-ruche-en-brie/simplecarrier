@@ -1,0 +1,28 @@
+{% trans_default_domain 'Modules.Mondialrelay.Steps' %}
+
+<ul>
+    <li>
+        {{'Enter and register your Mondial Relay webservice parameters on the page [1] Account Settings [/1]'|trans({'[1]': '<a href="'~account_settings_link~'" target="_blank">', '[/1]': '</a>'})|raw}}
+    </li>
+    <li>
+        {{'If needed you can modify the way to display the Points Relais via the page [1] Advanced parameters [/1]'|trans({'[1]': '<a href="'~advanced_settings_link~'" target="_blank">', '[/1]': '</a>'})|raw}}
+    </li>
+    <li>
+        {{'You can find the elements to set up the CRON task from your hosting provider to update the status "delivered" of your orders via the page [1] advanced parameters [/1]'|trans({'[1]': '<a href="'~advanced_settings_link~'" target="_blank">', '[/1]':'</a>'})|raw}}
+    </li>
+    <li>
+        {{'Create a new carrier via the page [1] Delivery Settings [/1]'|trans({'[1]': '<a href="'~mondialrelay_carrier_settings_link~'" target="_blank">', '[/1]': '</a>'})|raw}}
+    </li>
+    <li>
+        {{'Define the additional parameters from your carrier like shipping fees, weight categories, shipping countries, max. weight, … via the page [1] Shipping > Carriers [/1]'|trans({'[1]': '<a href="'~prestashop_carrier_settings_link~'" target="_blank">', '[/1]': '</a>'})|raw}}
+    </li>
+    <li>
+        {{'Enter the name, address, phone number of your shop via the page [1] Contact / Shops [/1]'|trans({'[1]': '<a href="'~store_contact_link~'" target="_blank">', '[/1]': '</a>'})|raw}}
+    </li>
+    <li>
+        {{'Create and print your labels to ship your orders'|trans}}
+    </li>
+    <li>
+        {{'Track your shipments from your [1] CONNECT professional space [/1]'|trans({'[1]': '<a href="https://connect.mondialrelay.com/" target="_blank">', '[/1]': '</a>'})|raw}}
+    </li>
+</ul>

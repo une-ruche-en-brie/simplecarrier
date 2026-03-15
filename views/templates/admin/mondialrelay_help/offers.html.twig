@@ -1,0 +1,22 @@
+{% trans_default_domain 'Modules.Mondialrelay.Offers' %}
+
+<div class="card">
+  <div class="card-header">{{'Mondial Relay Offers'|trans}}</div>
+  <div class="card-body">
+    <p>
+      {{'Discover Mondial Relay offers [1] here [/1]'|trans({'[1]': '<a
+        href="http://www.mondialrelay.fr/solutionspro/decouvrez-votre-offre" target="_blank">', '[/1]': '</a>'})|raw}}
+    </p>
+
+    <ul>
+      <li>
+        {{'START offer users : your settings parameters are available in your profile : [1] Connexion Parameters [/1]. [2] View your profile or create a new account here: [1] http://www.mondialrelay.fr/mon-profil-mondial-relay [/1]'|
+        trans({'[1]': '<a href="http://www.mondialrelay.fr/mon-profil-mondial-relay" target="_blank">', '[/1]': '</a>',
+        '[2]': '<br>'})|raw}}
+      </li>
+      <li>
+        {{'SUR MESURE offer : your commercial Mondial Relay contact will send you your module configurations.'|trans}}
+      </li>
+    </ul>
+  </div>
+</div>

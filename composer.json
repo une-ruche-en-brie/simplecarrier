@@ -5,13 +5,18 @@
   "authors": [
     {
       "name": "Nicolas Roudaire",
-      "email": "nikrou77@gmail.com"
+      "email": "contact@une-ruche-en-brie.fr"
     }
   ],
   "require": {
     "php": ">=8.4",
     "prestashop/module-lib-service-container": "^2.0",
     "symfony/http-client": "^8.0"
+  },
+  "require-dev": {
+    "friendsofphp/php-cs-fixer": "^3.86",
+    "phpstan/phpstan": "^2.1",
+    "rector/rector": "^2.3"
   },
   "config": {
     "vendor-dir": "vendor",
@@ -39,10 +44,5 @@
     "phpstan": "phpstan analyse",
     "rector": "rector process",
     "php-cs-fixer": "php-cs-fixer fix --allow-unsupported-php-version=yes"
-  },
-  "require-dev": {
-    "friendsofphp/php-cs-fixer": "^3.86",
-    "phpstan/phpstan": "^2.1",
-    "rector/rector": "^2.3"
   }
 }

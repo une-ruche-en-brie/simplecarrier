@@ -1,0 +1,12 @@
+{% extends '@PrestaShop/Admin/layout.html.twig' %}
+
+{% set include_path = '@Modules/mondialrelay/views/templates/admin/mondialrelay_help/' %}
+
+{% block content %}
+    {{ include(include_path ~ 'content.html.twig') }}
+    {{ include(include_path ~ 'offers.html.twig') }}
+    {{ include(include_path ~ 'setup_guide.html.twig') }}
+    {{ include(include_path ~ 'quick_help.html.twig') }}
+    {{ include(include_path ~ 'contact_us.html.twig') }}
+{% endblock %}
+

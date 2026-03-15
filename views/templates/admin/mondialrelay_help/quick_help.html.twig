@@ -1,0 +1,64 @@
+{% trans_default_domain 'Modules.Mondialrelay.Quick_help' %}
+
+<div class="card">
+  <div class="card-header"> {{'Quick help'|trans}} </div>
+  <div class="card-body">
+    <p> {{'Check requirements before configuring the module :'|trans}} </p>
+
+    <ul>
+      <li>
+        {{'Mondial Relay needs SOAP & cURL to be installed on your server'|trans}}
+      </li>
+      <li>
+        {{' For labels generation you should have a valid and registered address of your store on your [1] contact page [/1]'|trans({'[1]': '<a href="'~store_contact_link~'" target="_blank">', '[/1]': '</a>'})|raw}}
+      </li>
+      <li>
+        {{'The module needs to install some hooks as well'|trans}}
+      </li>
+    </ul>
+
+    <br/>
+
+    <p> {{'Click on the button below and check if all requirements are completed !'|trans}} </p>
+    <p>
+      <button
+        type="button"
+        id="mondialrelay_check-requirements"
+        class="btn btn-primary">
+        {{'Check requirements'|trans}}
+      </button>
+    </p>
+    <div id="mondialrelay_requirements-results">
+
+    </div>
+
+    <br/>
+
+    <p>
+      {{'Any problems with the module after an update ? [1] Try to clear the cache and put the force compilation to on.'|trans({'[1]': '<br>'})|raw}}
+    </p>
+    <p>
+      <a
+        href="{{prestashop_performance_url}}"
+        target="_blank"
+        class="btn btn-primary">
+        {{'Clear PrestaShop cache'|trans}}
+      </a>
+    </p>
+
+    <br/>
+
+    <p>
+      {{'Any problems with orders status update ? [1] Check Mondial Relay Logs :'|trans({'[1]': '<br>'})|raw}}
+    </p>
+    <p>
+      <a
+        href="{{logs_link}}"
+        target="_blank"
+        class="btn btn-primary">
+        {{'Open logs'|trans}}
+      </a>
+    </p>
+  </div>
+
+</div>

@@ -1,0 +1,7 @@
+admin_mondialrelay_help:
+  path: mondialrelay/help
+  defaults:
+    _controller: 'MondialRelay\MondialRelay\Controller\Admin\AdminMondialRelayHelpController::indexAction'
+
+
+
