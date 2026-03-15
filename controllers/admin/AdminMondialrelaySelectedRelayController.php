@@ -1,11 +1,14 @@
 <?php
-/**
- * NOTICE OF LICENSE
+/*
+ * This file is part of Simple Carrier module
  *
- * @author Mondial Relay <offrestart@mondialrelay.fr>
- * @copyright Copyright (c) Mondial Relay
- * @license http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * Copyright(c) Nicolas Roudaire  https://www.une-ruche-en-brie.fr/
+ * Licensed under the OSL version 3.0 license.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
+
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -21,6 +24,8 @@ class AdminMondialrelaySelectedRelayController extends AdminMondialrelayControll
     public $className = 'MondialrelaySelectedRelay';
 
     public $display = 'edit';
+
+    private $insuranceLevelsList;
 
     /**
      * @var array Holds relay data between object validation and save
@@ -41,6 +46,7 @@ class AdminMondialrelaySelectedRelayController extends AdminMondialrelayControll
     {
         if (!MondialRelayTools::checkDependencies()) {
             $this->errors[] = $this->module->l('SOAP and cURL should be installed on your server.', 'AdminMondialrelayController');
+
             return;
         }
 
@@ -49,17 +55,20 @@ class AdminMondialrelaySelectedRelayController extends AdminMondialrelayControll
             || (Configuration::get(MondialRelay::HOME_DELIVERY) && !MondialRelayTools::checkWebserviceConfigurationApi2())
         ) {
             $this->errors[] = $this->module->l('Please configure your webservice from the Account Settings tab.', 'AdminMondialrelayController');
+
             return;
         }
 
         if ($this->display == 'edit') {
             if (!$this->loadObject()) {
                 $this->errors[] = $this->module->l('Could not find updatable Mondial Relay order.', 'AdminMondialrelaySelectedRelayController');
+
                 return;
             }
 
             if ($this->object->label_url) {
                 $this->errors[] = $this->module->l('Label has already been generated for this order.', 'AdminMondialrelaySelectedRelayController');
+
                 return;
             }
         }
@@ -68,12 +77,14 @@ class AdminMondialrelaySelectedRelayController extends AdminMondialrelayControll
             $order = new Order(Tools::getValue('id_order'));
             if (!Validate::isLoadedObject($order)) {
                 $this->errors[] = $this->module->l('No order was specified.', 'AdminMondialrelaySelectedRelayController');
+
                 return;
             }
 
             $carrierMethod = MondialrelayCarrierMethod::getFromNativeCarrierId($order->id_carrier);
             if (!Validate::isLoadedObject($carrierMethod)) {
                 $this->errors[] = $this->module->l('This order is not using a Mondial Relay carrier.', 'AdminMondialrelaySelectedRelayController');
+
                 return;
             }
         }
@@ -124,7 +135,7 @@ class AdminMondialrelaySelectedRelayController extends AdminMondialrelayControll
                     'type' => 'text',
                     'label' => $this->module->l('Weight (grams)', 'AdminMondialrelaySelectedRelayController'),
                     'name' => 'package_weight',
-                    'hint' => $this->module->l('The weight must be greater or equal to @limit@ grams.', 'AdminMondialrelaySelectedRelayController', ['@limit@' => Mondialrelay::MINIMUM_PACKAGE_WEIGHT]),
+                    'hint' => $this->module->l('The weight must be greater or equal to @limit@ grams.', 'AdminMondialrelaySelectedRelayController', ['@limit@' => MondialRelay::MINIMUM_PACKAGE_WEIGHT]),
                 ],
                 [
                     'label' => $this->module->l('Insurance', 'AdminMondialrelaySelectedRelayController'),
@@ -133,7 +144,7 @@ class AdminMondialrelaySelectedRelayController extends AdminMondialrelayControll
                     'options' => [
                         'id' => 'value',
                         'name' => 'label',
-                        'query' => MondialrelayTools::formatArrayForSelect($this->insuranceLevelsList),
+                        'query' => MondialRelayTools::formatArrayForSelect($this->insuranceLevelsList),
                     ],
                     'hint' => $this->module->l('Please consult the details of your offer to find informations about your delivery mode options.', 'AdminMondialrelayCarriersSettingsController'),
                     'required' => true,
@@ -154,8 +165,8 @@ class AdminMondialrelaySelectedRelayController extends AdminMondialrelayControll
         if ($carrierMethod->needsRelay()) {
             // Add JS values for the widget
             Media::addJsDef([
-                'MONDIALRELAY_ENSEIGNE' => Configuration::get(Mondialrelay::WEBSERVICE_ENSEIGNE),
-                'MONDIALRELAY_DISPLAY_MAP' => Configuration::get(Mondialrelay::DISPLAY_MAP),
+                'MONDIALRELAY_ENSEIGNE' => Configuration::get(MondialRelay::WEBSERVICE_ENSEIGNE),
+                'MONDIALRELAY_DISPLAY_MAP' => Configuration::get(MondialRelay::DISPLAY_MAP),
                 'MONDIALRELAY_NO_SELECTION_ERROR' => $this->module->l('Please select a Point Relais®.', 'AdminMondialrelaySelectedRelayController'),
                 'MONDIALRELAY_SELECTED_RELAY_IDENTIFIER' => $this->object->getFullRelayIdentifier(),
                 'MONDIALRELAY_COUNTRY_ISO' => $address->id_country ? Country::getIsoById($address->id_country) : '',
@@ -183,18 +194,21 @@ class AdminMondialrelaySelectedRelayController extends AdminMondialrelayControll
         $order = new Order($this->id_object ? $this->object->id_order : Tools::getValue('id_order'));
         if (!Validate::isLoadedObject($order)) {
             $this->errors[] = $this->module->l('No order was specified.', 'AdminMondialrelaySelectedRelayController');
+
             return;
         }
 
         $carrierMethod = MondialrelayCarrierMethod::getFromNativeCarrierId($order->id_carrier);
         if (!Validate::isLoadedObject($carrierMethod)) {
             $this->errors[] = $this->module->l('This order is not using a Mondial Relay carrier.', 'AdminMondialrelaySelectedRelayController');
+
             return;
         }
 
         $package_weight = (int) Tools::getValue('package_weight');
-        if ($package_weight < Mondialrelay::MINIMUM_PACKAGE_WEIGHT) {
-            $this->errors[] = $this->module->l('The weight must be greater or equal to @limit@ grams.', 'AdminMondialrelaySelectedRelayController', ['@limit@' => Mondialrelay::MINIMUM_PACKAGE_WEIGHT]);
+        if ($package_weight < MondialRelay::MINIMUM_PACKAGE_WEIGHT) {
+            $this->errors[] = $this->module->l('The weight must be greater or equal to @limit@ grams.', 'AdminMondialrelaySelectedRelayController', ['@limit@' => MondialRelay::MINIMUM_PACKAGE_WEIGHT]);
+
             return;
         }
 
@@ -203,22 +217,26 @@ class AdminMondialrelaySelectedRelayController extends AdminMondialrelayControll
             $fullRelayIdentifier = Tools::getValue('selected_relay_full_identifier');
             if (!$fullRelayIdentifier) {
                 $this->errors['selected_relay_full_identifier'] = $this->module->l('You must select a Point Relais®.', 'AdminMondialrelaySelectedRelayController');
+
                 return false;
             }
 
             list($relay_country_iso, $relay_num) = explode('-', $fullRelayIdentifier);
             if (!$relay_country_iso || !$relay_num) {
                 $this->errors['selected_relay_full_identifier'] = $this->module->l('Invalid relay identifier : @identifier@', 'AdminMondialrelaySelectedRelayController', ['@identifier@' => $fullRelayIdentifier]);
+
                 return false;
             }
 
             $validationObject = new MondialrelaySelectedRelay();
             if (($error = $validationObject->validateField('selected_relay_country_iso', $relay_country_iso, null, [], true)) !== true) {
                 $this->errors['selected_relay_full_identifier'] = $error;
+
                 return false;
             }
             if (($error = $validationObject->validateField('selected_relay_num', $relay_num, null, [], true)) !== true) {
                 $this->errors['selected_relay_full_identifier'] = $error;
+
                 return false;
             }
 
@@ -232,6 +250,7 @@ class AdminMondialrelaySelectedRelayController extends AdminMondialrelayControll
      *
      * @param string $relay_country_iso
      * @param string $relay_num
+     *
      * @return bool
      *
      * @see _childValidation()
@@ -244,7 +263,7 @@ class AdminMondialrelaySelectedRelayController extends AdminMondialrelayControll
 
         // Set input data
         $handler->setConveyor([
-            'enseigne' => Configuration::get(Mondialrelay::WEBSERVICE_ENSEIGNE),
+            'enseigne' => Configuration::get(MondialRelay::WEBSERVICE_ENSEIGNE),
             'country_iso' => $relay_country_iso,
             'relayNumber' => $relay_num,
         ])
@@ -258,6 +277,7 @@ class AdminMondialrelaySelectedRelayController extends AdminMondialrelayControll
 
             if (empty($actionsResult['errors'])) {
                 $this->errors[] = $e->getMessage();
+
                 return false;
             }
 
@@ -274,10 +294,13 @@ class AdminMondialrelaySelectedRelayController extends AdminMondialrelayControll
             foreach ($actionsResult['errors'] as $error) {
                 $this->errors[] = $error;
             }
+
             return false;
         }
 
         $this->relayInformations = $actionsResult['relayInfos'];
+
+        return true;
     }
 
     /**
@@ -286,7 +309,8 @@ class AdminMondialrelaySelectedRelayController extends AdminMondialrelayControll
      * the API and/or the previous orders.
      *
      * @param MondialrelaySelectedRelay $object
-     * @param string $table
+     * @param string                    $table
+     *
      * @see AdminController::copyFromPost()
      */
     protected function copyFromPost(&$object, $table)
@@ -361,6 +385,7 @@ class AdminMondialrelaySelectedRelayController extends AdminMondialrelayControll
     {
         $this->tpl_form_vars['selectedRelay'] = Validate::isLoadedObject($this->object) ? $this->object : false;
         $this->tpl_form_vars['module_url'] = $this->module->getPathUri();
+
         return parent::getTemplateFormVars();
     }
 

@@ -1,11 +1,14 @@
 <?php
-/**
- * NOTICE OF LICENSE
+/*
+ * This file is part of Simple Carrier module
  *
- * @author Mondial Relay <offrestart@mondialrelay.fr>
- * @copyright Copyright (c) Mondial Relay
- * @license http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * Copyright(c) Nicolas Roudaire  https://www.une-ruche-en-brie.fr/
+ * Licensed under the OSL version 3.0 license.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
+
 require_once _PS_MODULE_DIR_ . '/mondialrelay/mondialrelay.php';
 require_once _PS_MODULE_DIR_ . '/mondialrelay/classes/MondialrelayTools.php';
 
@@ -15,17 +18,19 @@ if (!defined('_PS_VERSION_')) {
 
 abstract class MondialrelayService
 {
-    const BASE_URL = 'https://api.mondialrelay.com/';
-    const WEBSERVICE_URL = 'https://api.mondialrelay.com/Web_Services.asmx?WSDL';
+    public const BASE_URL = 'https://api.mondialrelay.com/';
+    public const WEBSERVICE_URL = 'https://api.mondialrelay.com/Web_Services.asmx?WSDL';
 
     /**
      * @var string Usually retrieved from Configuration
+     *
      * @see MondialrelayService::setEnseigne()
      */
     protected $webservice_enseigne = '';
 
     /**
      * @var string Usually retrieved from Configuration
+     *
      * @see MondialrelayService::setPrivateKey()
      */
     protected $webservice_key = '';
@@ -96,36 +101,38 @@ abstract class MondialrelayService
 
     /**
      * "Factory" method; returns a concrete "Service" class when given a
-     * webservice function, or false if the function wasn't found
+     * webservice function, or false if the function wasn't found.
      *
      * @param string $function The webservice's function name
+     *
      * @return MondialrelayService
      */
     public static function getService($function)
     {
         if (isset(self::$webservice_functions[$function])) {
             require_once dirname(__FILE__) . '/' . self::$webservice_functions[$function] . '.php';
+
             return new self::$webservice_functions[$function]();
         }
+
         return false;
     }
 
     /**
      * Use getService() instead.
-     *
-     * @param type $data
      */
     protected function __construct()
     {
-        $this->webservice_enseigne = Configuration::get(Mondialrelay::WEBSERVICE_ENSEIGNE);
-        $this->webservice_key = Configuration::get(Mondialrelay::WEBSERVICE_KEY);
+        $this->webservice_enseigne = Configuration::get(MondialRelay::WEBSERVICE_ENSEIGNE);
+        $this->webservice_key = Configuration::get(MondialRelay::WEBSERVICE_KEY);
     }
 
     /**
      * Sets data to be used by the service; this is where setPayloadFromData()
-     * should be called, and where "contextual" data should be added
+     * should be called, and where "contextual" data should be added.
      *
      * @param array $data data used by the service
+     *
      * @return bool
      */
     abstract public function init($data);
@@ -133,7 +140,6 @@ abstract class MondialrelayService
     /**
      * Validates data and sets the payload.
      *
-     * @param array $data
      * @return bool
      */
     protected function setPayloadFromData()
@@ -181,10 +187,10 @@ abstract class MondialrelayService
     }
 
     /**
-     * Validates a field from an item in the $data array
+     * Validates a field from an item in the $data array.
      *
-     * @param int $key the item's position in the $data array
-     * @param array $item the validated item from the $data array
+     * @param int    $key       the item's position in the $data array
+     * @param array  $item      the validated item from the $data array
      * @param string $fieldName the field to validate in the item
      */
     protected function validateField($key, &$item, $fieldName)
@@ -215,6 +221,7 @@ abstract class MondialrelayService
                 }
 
                 unset($item[$fieldName]);
+
                 return true;
             }
         }
@@ -229,6 +236,7 @@ abstract class MondialrelayService
 
             $this->errors[$key][] = $this->l('Field %s format is invalid for webservice function %s and was removed from the request.', 'MondialrelayService', [$fieldName, $this->function]);
             unset($item[$fieldName]);
+
             return true;
         }
 
@@ -272,7 +280,7 @@ abstract class MondialrelayService
 
     /**
      * Sends the $payload to the webservice; the answer should be parsed and the
-     * $result set during this process
+     * $result set during this process.
      *
      * @return bool
      *
@@ -282,12 +290,13 @@ abstract class MondialrelayService
      */
     public function send()
     {
-        if (!MondialrelayTools::checkDependencies()) {
+        if (!MondialRelayTools::checkDependencies()) {
             throw new Exception($this->l('SOAP and cURL should be installed on your server.', 'MondialrelayService'));
         }
 
         if (empty($this->payload)) {
             $this->errors['generic'][] = $this->l('No data to send.', 'MondialrelayService');
+
             return false;
         }
 
@@ -310,11 +319,10 @@ abstract class MondialrelayService
 
     /**
      * Parses a result retrieved from the SOAP client, and sets $result
-     * variable
+     * variable.
      *
      * @param SoapClient $soapClient
-     * @param mixed $result
-     * @param int $key The index of the item sent from the $payload array
+     * @param int        $key        The index of the item sent from the $payload array
      */
     abstract protected function parseResult($soapClient, $result, $key);
 
@@ -341,7 +349,7 @@ abstract class MondialrelayService
     /**
      * Translation function.
      *
-     * @param string $string The string to translate
+     * @param string $string   The string to translate
      * @param string $specific The name of the file, if different from the calling class
      *
      * @return string
@@ -432,6 +440,7 @@ abstract class MondialrelayService
                 99 => $this->l('Generic error of service system. This error can happen due to a technical service problem. Please notify this error to Mondial Relay with the date and time of the request as well as the parameters sent in order to verify', 'MondialrelayService'),
             ];
         }
+
         return !empty(self::$webservice_errorCodes[$code]) ? self::$webservice_errorCodes[$code] : self::$webservice_errorCodes[99];
     }
 }

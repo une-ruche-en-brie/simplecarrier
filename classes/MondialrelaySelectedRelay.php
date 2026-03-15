@@ -1,11 +1,14 @@
 <?php
-/**
- * NOTICE OF LICENSE
+/*
+ * This file is part of Simple Carrier module
  *
- * @author Mondial Relay <offrestart@mondialrelay.fr>
- * @copyright Copyright (c) Mondial Relay
- * @license http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * Copyright(c) Nicolas Roudaire  https://www.une-ruche-en-brie.fr/
+ * Licensed under the OSL version 3.0 license.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
+
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -131,9 +134,6 @@ class MondialrelaySelectedRelay extends ObjectModel
 
     public $height;
 
-    /**
-     * {@inheritDoc}
-     */
     public static $definition = [
         'table' => 'mondialrelay_selected_relay',
         'primary' => 'id_mondialrelay_selected_relay',
@@ -167,8 +167,10 @@ class MondialrelaySelectedRelay extends ObjectModel
 
     /**
      * Returns an existing MondialrelaySelectedRelay object associated to a
-     * cart, or an empty one if none exists
+     * cart, or an empty one if none exists.
+     *
      * @param int $id_cart
+     *
      * @return MondialrelaySelectedRelay
      */
     public static function getFromIdCart($id_cart)
@@ -193,6 +195,7 @@ class MondialrelaySelectedRelay extends ObjectModel
      * address; there is NO guarantee on WHICH line will be returned.
      *
      * @param int $id_address
+     *
      * @return MondialrelaySelectedRelay|false
      */
     public static function getAnyFromIdAddressDelivery($id_address)
@@ -213,6 +216,7 @@ class MondialrelaySelectedRelay extends ObjectModel
 
         $selectedRelay = new MondialrelaySelectedRelay();
         $selectedRelay->hydrate($res);
+
         return $selectedRelay;
     }
 
@@ -220,9 +224,10 @@ class MondialrelaySelectedRelay extends ObjectModel
      * Retrieves a customer's existing relay address id, using the previously
      * placed orders.
      *
-     * @param int $id_customer
+     * @param int    $id_customer
      * @param string $relayNumber
      * @param string $country_iso
+     *
      * @return MondialrelaySelectedRelay
      */
     public static function getCustomerRelayAddress($id_customer, $relayNumber, $country_iso)
@@ -245,13 +250,15 @@ class MondialrelaySelectedRelay extends ObjectModel
         if ($id_address) {
             return new Address($id_address);
         }
+
         return false;
     }
 
     /**
-     * Checks if an address represents a relay
+     * Checks if an address represents a relay.
      *
      * @param int $id_address
+     *
      * @return bool
      */
     public static function isRelayAddress($id_address)
@@ -296,6 +303,7 @@ class MondialrelaySelectedRelay extends ObjectModel
      *
      * @param int $id_address
      * @param int $exclude_id_order If we're checking the address of an existing order, we need to exclude it
+     *
      * @return bool
      */
     public static function isUsedRelayAddress($id_address, $exclude_id_order = null)
@@ -324,7 +332,8 @@ class MondialrelaySelectedRelay extends ObjectModel
     }
 
     /**
-     * Returns the relay's full identifier
+     * Returns the relay's full identifier.
+     *
      * @return string|false
      */
     public function getFullRelayIdentifier()
@@ -332,16 +341,18 @@ class MondialrelaySelectedRelay extends ObjectModel
         if (!$this->selected_relay_country_iso || !$this->selected_relay_num) {
             return false;
         }
+
         return $this->selected_relay_country_iso . '-' . $this->selected_relay_num;
     }
 
     /**
-     * Sets the Mondial relay's order tracking url
+     * Sets the Mondial relay's order tracking url.
      *
      * @param string $enseigne
      * @param string $brand_code
-     * @param string $iso_lang The language of the destination page
+     * @param string $iso_lang   The language of the destination page
      * @param string $key
+     *
      * @return void
      */
     public function setTrackingUrl($enseigne, $brand_code, $iso_lang, $key)
@@ -352,7 +363,7 @@ class MondialrelaySelectedRelay extends ObjectModel
         $deliveryAddress = new Address($this->id_address_delivery);
         $iso = Country::getIsoById($deliveryAddress->id_country);
         $url = ($iso == 'GB') ? '/en-gb?' : '/public/permanent/tracking.aspx?';
-        $this->tracking_url = Mondialrelay::URL_DOMAIN . $url
+        $this->tracking_url = MondialRelay::URL_DOMAIN . $url
             . 'ens=' . $enseigne . $brand_code
             . '&exp=' . $this->expedition_num
             . '&pays=' . Country::getIsoById($deliveryAddress->id_country)
@@ -367,7 +378,7 @@ class MondialrelaySelectedRelay extends ObjectModel
     /**
      * Retrieves every object with a generated label that wasn't delivered; i.e.
      * all orders with an expedition number and an order state different from
-     * the one configured for "delivered" orders
+     * the one configured for "delivered" orders.
      *
      * @return array An array of MondialrelaySelectedRelay objects
      */
@@ -378,12 +389,12 @@ class MondialrelaySelectedRelay extends ObjectModel
             ->from(self::$definition['table'], 'mr_sr')
             ->innerJoin(Order::$definition['table'], 'o', 'o.id_order = mr_sr.id_order')
             ->where('expedition_num IS NOT NULL AND expedition_num <> ""')
-            ->where('o.current_state <> ' . (int) Configuration::get(Mondialrelay::OS_ORDER_DELIVERED))
+            ->where('o.current_state <> ' . (int) Configuration::get(MondialRelay::OS_ORDER_DELIVERED))
             ->where('DATE_ADD(mr_sr.date_label_generation, INTERVAL 1 YEAR) > CURRENT_DATE')
             ->where('o.date_add >= DATE_SUB(NOW(), INTERVAL 3 MONTH)')
         ;
 
-        $cronIgnoreStatus = (int) Configuration::get(Mondialrelay::OS_CRON_IGNORE);
+        $cronIgnoreStatus = (int) Configuration::get(MondialRelay::OS_CRON_IGNORE);
         if ($cronIgnoreStatus > 0) {
             $query->where('o.current_state <> ' . pSQL($cronIgnoreStatus));
         }
@@ -400,7 +411,7 @@ class MondialrelaySelectedRelay extends ObjectModel
             $query->select('oh.id_order_state')
                 ->from(OrderHistory::$definition['table'], 'oh')
                 ->where('id_order =' . (int) $line['id_order'])
-                ->where('id_order_state =' . (int) Configuration::get(Mondialrelay::OS_ORDER_DELIVERED))
+                ->where('id_order_state =' . (int) Configuration::get(MondialRelay::OS_ORDER_DELIVERED))
             ;
             if (Db::getInstance()->getValue($query)) {
                 continue;
@@ -414,9 +425,7 @@ class MondialrelaySelectedRelay extends ObjectModel
     }
 
     /**
-     * Get ID of employee for change order status by cron
-     * @param $id_order
-     * @return mixed
+     * Get ID of employee for change order status by cron.
      */
     public static function getOrderEmployee($id_order)
     {
@@ -426,6 +435,7 @@ class MondialrelaySelectedRelay extends ObjectModel
             ->where('id_order =' . (int) $id_order)
             ->where('id_employee != 0')
         ;
+
         return Db::getInstance()->getValue($query);
     }
 }

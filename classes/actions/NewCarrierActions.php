@@ -1,11 +1,14 @@
 <?php
-/**
- * NOTICE OF LICENSE
+/*
+ * This file is part of Simple Carrier module
  *
- * @author Mondial Relay <offrestart@mondialrelay.fr>
- * @copyright Copyright (c) Mondial Relay
- * @license http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * Copyright(c) Nicolas Roudaire  https://www.une-ruche-en-brie.fr/
+ * Licensed under the OSL version 3.0 license.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
+
 require_once _PS_MODULE_DIR_ . '/mondialrelay/classes/MondialrelayCarrierMethod.php';
 
 use MondialRelay\MondialRelay\Component\DeliveryModeInterface;
@@ -18,12 +21,16 @@ if (!defined('_PS_VERSION_')) {
 
 class NewCarrierActions extends DefaultActions
 {
+    private $errors = [];
+
     public function setConveyor($conveyorData)
     {
         if (!isset($conveyorData['errors'])) {
             $conveyorData['errors'] = [];
         }
         parent::setConveyor($conveyorData);
+
+        return $this;
     }
 
     protected function getCarrierFromConveyor()
@@ -36,6 +43,7 @@ class NewCarrierActions extends DefaultActions
         if (!$carrier || !Validate::isLoadedObject($carrier)) {
             return false;
         }
+
         return $carrier;
     }
 
@@ -64,7 +72,7 @@ class NewCarrierActions extends DefaultActions
         $carrier->shipping_method = Carrier::SHIPPING_METHOD_WEIGHT;
         $carrier->delay = $delay_lang;
         $carrier->is_module = 1;
-        $carrier->id_shop_list = MondialrelayTools::getShopsWithModuleEnabled(
+        $carrier->id_shop_list = MondialRelayTools::getShopsWithModuleEnabled(
             Module::getModuleIdByName('mondialrelay'),
             Shop::getContextListShopID()
         );
@@ -72,6 +80,7 @@ class NewCarrierActions extends DefaultActions
         try {
             if (!$carrier->add()) {
                 $this->conveyor['errors'][] = $this->l('Failed to create Prestashop carrier.', 'NewCarrierActions');
+
                 return false;
             }
         } catch (Exception $e) {
@@ -79,6 +88,7 @@ class NewCarrierActions extends DefaultActions
                 $this->l('Failed to create Prestashop carrier : %s', 'NewCarrierActions'),
                 $e->getMessage()
             );
+
             return false;
         }
 
@@ -102,6 +112,7 @@ class NewCarrierActions extends DefaultActions
         }
 
         $this->conveyor['carrier'] = $carrier;
+
         return true;
     }
 
@@ -109,16 +120,19 @@ class NewCarrierActions extends DefaultActions
     {
         if (empty($this->conveyor['delivery_mode'])) {
             $this->conveyor['errors'][] = $this->l('Failed to create Mondial Relay carrier method : missing Delivery mode.', 'NewCarrierActions');
+
             return false;
         }
         if (empty($this->conveyor['insurance_level']) && (string) $this->conveyor['insurance_level'] != '0') {
             $this->conveyor['errors'][] = $this->l('Failed to create Mondial Relay carrier method : missing Insurance level.', 'NewCarrierActions');
+
             return false;
         }
 
         $carrier = $this->getCarrierFromConveyor();
         if (!$carrier || !Validate::isLoadedObject($carrier)) {
             $this->conveyor['errors'][] = $this->l('Failed to create Mondial Relay carrier method : invalid Prestashop carrier', 'NewCarrierActions');
+
             return false;
         }
 
@@ -133,6 +147,7 @@ class NewCarrierActions extends DefaultActions
         try {
             if (!$carrierMethod->add()) {
                 $this->conveyor['errors'][] = $this->l('Failed to create Mondial Relay carrier method.', 'NewCarrierActions');
+
                 return false;
             }
         } catch (Exception $e) {
@@ -140,6 +155,7 @@ class NewCarrierActions extends DefaultActions
                 $this->l('Failed to create Mondial Relay carrier method : %s.', 'NewCarrierActions'),
                 $e->getMessage()
             );
+
             return false;
         }
 
@@ -151,6 +167,7 @@ class NewCarrierActions extends DefaultActions
         $carrier = $this->getCarrierFromConveyor();
         if (!$carrier || !Validate::isLoadedObject($carrier)) {
             $this->conveyor['errors'][] = $this->l('Failed to add default zones to carrier : invalid Prestashop carrier', 'NewCarrierActions');
+
             return true;
         }
 
@@ -174,17 +191,20 @@ class NewCarrierActions extends DefaultActions
     {
         if (empty($this->conveyor['weight_coeff'])) {
             $this->conveyor['errors'][] = $this->l('Failed to add default weight range to carrier : missing Weight coefficient.', 'NewCarrierActions');
+
             return false;
         }
 
         if (empty($this->conveyor['delivery_mode'])) {
             $this->conveyor['errors'][] = $this->l('Failed to add default weight range to carrier : missing Delivery mode.', 'NewCarrierActions');
+
             return false;
         }
 
         $carrier = $this->getCarrierFromConveyor();
         if (!$carrier || !Validate::isLoadedObject($carrier)) {
             $this->conveyor['errors'][] = $this->l('Failed to add default weight range to carrier : invalid Prestashop carrier', 'NewCarrierActions');
+
             return true;
         }
 
@@ -224,6 +244,7 @@ class NewCarrierActions extends DefaultActions
         $carrier = $this->getCarrierFromConveyor();
         if (!$carrier || !Validate::isLoadedObject($carrier)) {
             $this->conveyor['errors'][] = $this->l('Failed to add default price range for carrier : invalid Prestashop carrier', 'NewCarrierActions');
+
             return true;
         }
 
@@ -255,6 +276,7 @@ class NewCarrierActions extends DefaultActions
         $carrier = $this->getCarrierFromConveyor();
         if (!$carrier || !Validate::isLoadedObject($carrier)) {
             $this->conveyor['errors'][] = $this->l('Failed to associate customer groups to carrier : invalid Prestashop carrier', 'NewCarrierActions');
+
             return true;
         }
 

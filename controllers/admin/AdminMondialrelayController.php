@@ -79,7 +79,7 @@ abstract class AdminMondialrelayController extends ModuleAdminController
      */
     public function postProcess()
     {
-        if (!MondialrelayTools::checkDependencies()) {
+        if (!MondialRelayTools::checkDependencies()) {
             $error = $this->module->l('SOAP and cURL should be installed on your server.', 'AdminMondialrelayController');
 
             if (!$this->ajax) {

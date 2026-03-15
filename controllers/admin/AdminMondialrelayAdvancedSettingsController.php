@@ -99,7 +99,7 @@ class AdminMondialrelayAdvancedSettingsController extends AdminProcessMonitorCon
                 'icon' => 'icon-cog',
                 'description' => $this->createTemplate('display_mode_description.tpl')->fetch(),
                 'fields' => [
-                    Mondialrelay::DISPLAY_MAP => [
+                    MondialRelay::DISPLAY_MAP => [
                         'type' => 'radio',
                         'title' => $this->module->l('Display Mode :', 'AdminMondialrelayAdvancedSettingsController'),
                         'choices' => [
@@ -117,26 +117,26 @@ class AdminMondialrelayAdvancedSettingsController extends AdminProcessMonitorCon
                 'icon' => 'icon-cog',
                 'description' => $this->module->l('By default, Mondial Relay module uses "Processing in progress" order status for showing orders available for labels generation. Once labels are generated, orders pass to the "Shipped" status. For already delivered orders the module uses "Delivered" status. [br] Here you can change it and use your own system of order status associations :', 'AdminMondialrelayAdvancedSettingsController'),
                 'fields' => [
-                    Mondialrelay::OS_DISPLAY_LABEL => [
+                    MondialRelay::OS_DISPLAY_LABEL => [
                         'type' => 'select',
                         'title' => $this->module->l('Order status to apply for showing orders available for labels generation :', 'AdminMondialrelayAdvancedSettingsController'),
                         'list' => $orderStates,
                         'identifier' => 'id_order_state',
                         'form_group_class' => 'mondialrelay_long-label',
                     ],
-                    Mondialrelay::OS_LABEL_GENERATED => [
+                    MondialRelay::OS_LABEL_GENERATED => [
                         'type' => 'select',
                         'title' => $this->module->l('Order status to apply after labels generation :', 'AdminMondialrelayAdvancedSettingsController'),
                         'list' => $orderStates,
                         'identifier' => 'id_order_state',
                     ],
-                    Mondialrelay::OS_ORDER_DELIVERED => [
+                    MondialRelay::OS_ORDER_DELIVERED => [
                         'type' => 'select',
                         'title' => $this->module->l('Order status to apply for already delivered orders :', 'AdminMondialrelayAdvancedSettingsController'),
                         'list' => $orderStates,
                         'identifier' => 'id_order_state',
                     ],
-                    Mondialrelay::OS_CRON_IGNORE => [
+                    MondialRelay::OS_CRON_IGNORE => [
                         'type' => 'select',
                         'title' => $this->module->l('Order status to ignore in CRON task (optional) :', 'AdminMondialrelayAdvancedSettingsController'),
                         'list' => $orderStatesWithNone,
@@ -157,7 +157,7 @@ class AdminMondialrelayAdvancedSettingsController extends AdminProcessMonitorCon
      */
     public function postProcess()
     {
-        if (!MondialrelayTools::checkDependencies()) {
+        if (!MondialRelayTools::checkDependencies()) {
             // Leave the "specific" as-is; we'll only have one translation this way.
             $error = $this->module->l('SOAP and cURL should be installed on your server.', 'AdminMondialrelayController');
 

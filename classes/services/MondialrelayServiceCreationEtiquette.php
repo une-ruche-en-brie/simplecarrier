@@ -1,11 +1,14 @@
 <?php
-/**
- * NOTICE OF LICENSE
+/*
+ * This file is part of Simple Carrier module
  *
- * @author Mondial Relay <offrestart@mondialrelay.fr>
- * @copyright Copyright (c) Mondial Relay
- * @license http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * Copyright(c) Nicolas Roudaire  https://www.une-ruche-en-brie.fr/
+ * Licensed under the OSL version 3.0 license.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
+
 require_once _PS_MODULE_DIR_ . '/mondialrelay/classes/services/MondialrelayService.php';
 
 if (!defined('_PS_VERSION_')) {
@@ -14,14 +17,8 @@ if (!defined('_PS_VERSION_')) {
 
 class MondialrelayServiceCreationEtiquette extends MondialrelayService
 {
-    /**
-     * {@inheritDoc}
-     */
     protected $function = 'WSI2_CreationEtiquette';
 
-    /**
-     * {@inheritDoc}
-     */
     protected $fields = [
         'Enseigne' => [
             'required' => true,
@@ -241,19 +238,16 @@ class MondialrelayServiceCreationEtiquette extends MondialrelayService
      */
     protected $webservice_CRT_Devise = 'EUR';
 
-    /**
-     * {@inheritDoc}
-     */
     protected function __construct()
     {
         parent::__construct();
 
         // While this doesn't really depend on the context, it is (for now) a
         // constant in the module.
-        $this->webservice_ModeCol = Mondialrelay::COLLECTION_MODE;
+        $this->webservice_ModeCol = MondialRelay::COLLECTION_MODE;
 
         $this->webservice_ExpeAddress = [
-            'Expe_Langage' => Configuration::get(Mondialrelay::LABEL_LANG),
+            'Expe_Langage' => Configuration::get(MondialRelay::LABEL_LANG),
             'Expe_Ad1' => Tools::replaceAccentedChars(Configuration::get('PS_SHOP_NAME')),
             'Expe_Ad3' => Tools::replaceAccentedChars(Configuration::get('PS_SHOP_ADDR1')),
             // Deleted, cause too many failed for the process
@@ -261,27 +255,26 @@ class MondialrelayServiceCreationEtiquette extends MondialrelayService
             'Expe_Ville' => Tools::replaceAccentedChars(Configuration::get('PS_SHOP_CITY')),
             'Expe_CP' => Configuration::get('PS_SHOP_CODE'),
             'Expe_Pays' => Country::getIsoById(Configuration::get('PS_SHOP_COUNTRY_ID')),
-            'Expe_Tel1' => MondialrelayTools::getFormattedPhonenumber(Configuration::get('PS_SHOP_PHONE')),
+            'Expe_Tel1' => MondialRelayTools::getFormattedPhonenumber(Configuration::get('PS_SHOP_PHONE')),
             'Expe_Mail' => Configuration::get('PS_SHOP_EMAIL'),
         ];
 
-        $this->webservice_Dest_Langage = Configuration::get(Mondialrelay::LABEL_LANG);
+        $this->webservice_Dest_Langage = Configuration::get(MondialRelay::LABEL_LANG);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function init($data)
     {
         $this->data = $data;
+
         return $this->setPayloadFromData();
     }
 
     /**
-     * Preprocess a data item
+     * Preprocess a data item.
      *
-     * @param int $key
+     * @param int   $key
      * @param array $item
+     *
      * @return array the preprocessed item
      */
     protected function preprocessData($key, $item)
@@ -377,27 +370,29 @@ class MondialrelayServiceCreationEtiquette extends MondialrelayService
     }
 
     /**
-     * Validates an expedition zipcode
+     * Validates an expedition zipcode.
      *
-     * @param int $key the position of the validated item in the $data array
+     * @param int    $key   the position of the validated item in the $data array
      * @param string $value the 'Expe_CP' value of the item in the $data array
+     *
      * @return bool
      */
     protected function processExpeCP($key, $value, $item)
     {
         $iso_country = $item['Expe_Pays'];
-        if (MondialrelayTools::checkZipcodeByCountry($value, $iso_country)) {
+        if (MondialRelayTools::checkZipcodeByCountry($value, $iso_country)) {
             return $value;
         }
 
         $this->errors[$key][] = $this->l('The zipcode %s is invalid for the country selected in the shop contact information. Please add a valide zip code or change the country in your PrestaShop contact details.', false, [$value]);
+
         return false;
     }
 
     /**
-     * Validates a destination zipcode
+     * Validates a destination zipcode.
      *
-     * @param int $key the position of the validated item in the $data array
+     * @param int    $key   the position of the validated item in the $data array
      * @param string $value the 'Dest_CP' value of the item in the $data array
      *
      * @return bool
@@ -405,17 +400,15 @@ class MondialrelayServiceCreationEtiquette extends MondialrelayService
     protected function processDestCP($key, $value, $item)
     {
         $iso_country = $item['Dest_Pays'];
-        if (MondialrelayTools::checkZipcodeByCountry($value, $iso_country)) {
+        if (MondialRelayTools::checkZipcodeByCountry($value, $iso_country)) {
             return $value;
         }
 
         $this->errors[$key][] = $this->l('Invalid destination zipcode for country %s : %s', false, [$iso_country, $value]);
+
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     protected function parseResult($soapClient, $result, $key)
     {
         $this->result[$key] = $result->{$this->function . 'Result'};

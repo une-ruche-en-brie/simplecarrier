@@ -1,25 +1,12 @@
 <?php
-/**
- * NOTICE OF LICENSE
+/*
+ * This file is part of Simple Carrier module
  *
- * This source file is subject to a commercial license from ScaleDEV.
- * Use, copy, modification or distribution of this source file without written
- * license agreement from ScaleDEV is strictly forbidden.
- * In order to obtain a license, please contact us: contact@scaledev.fr
- * ...........................................................................
- * INFORMATION SUR LA LICENCE D'UTILISATION
+ * Copyright(c) Nicolas Roudaire  https://www.une-ruche-en-brie.fr/
+ * Licensed under the OSL version 3.0 license.
  *
- * L'utilisation de ce fichier source est soumise à une licence commerciale
- * concédée par la société ScaleDEV.
- * Toute utilisation, reproduction, modification ou distribution du présent
- * fichier source sans contrat de licence écrit de la part de ScaleDEV est
- * expressément interdite.
- * Pour obtenir une licence, veuillez nous contacter : contact@scaledev.fr
- * ...........................................................................
- * @author ScaleDEV <contact@scaledev.fr>
- * @copyright Copyright (c) ScaleDEV - 12 RUE CHARLES MORET - 10120 SAINT-ANDRE-LES-VERGERS - FRANCE
- * @license Commercial license
- * Support: support@scaledev.fr
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace MondialRelay\MondialRelay\Api\Request;
@@ -35,21 +22,23 @@ if (!defined('_PS_VERSION_')) {
 }
 
 /**
- * Class GetProductsCategoriesListRequest
+ * Class GetProductsCategoriesListRequest.
  *
  * @author Fabien Sigrand <contact@scaledev.fr>
  */
 final class TestConnexionRequest
 {
-    const URL_TEST = 'https://connect-api-sandbox.mondialrelay.com/api/shipment';
+    public const URL_TEST = 'https://connect-api-sandbox.mondialrelay.com/api/shipment';
 
-    const URL_PROD = 'https://connect-api.mondialrelay.com/api/shipment';
+    public const URL_PROD = 'https://connect-api.mondialrelay.com/api/shipment';
 
     /** @var Client */
     private $client;
 
     /** @var TestConnexionResponse */
     private $response;
+
+    private string $apiKey;
 
     /**
      * GetProductsCategoriesListRequest constructor.

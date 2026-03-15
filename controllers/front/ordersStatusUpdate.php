@@ -1,11 +1,14 @@
 <?php
-/**
- * NOTICE OF LICENSE
+/*
+ * This file is part of Simple Carrier module
  *
- * @author Mondial Relay <offrestart@mondialrelay.fr>
- * @copyright Copyright (c) Mondial Relay
- * @license http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * Copyright(c) Nicolas Roudaire  https://www.une-ruche-en-brie.fr/
+ * Licensed under the OSL version 3.0 license.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
+
 use MondialrelayClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 use MondialrelayClasslib\Extensions\ProcessMonitor\Controllers\Front\CronController;
 
@@ -17,9 +20,10 @@ class MondialrelayOrdersStatusUpdateModuleFrontController extends CronController
 {
     public function checkAccess()
     {
-        if (Tools::getValue('deprecated_task') && Tools::getValue('secure_key') && Tools::getValue('secure_key') == Configuration::get(Mondialrelay::DEPRECATED_SECURE_KEY)) {
+        if (Tools::getValue('deprecated_task') && Tools::getValue('secure_key') && Tools::getValue('secure_key') == Configuration::get(MondialRelay::DEPRECATED_SECURE_KEY)) {
             return true;
         }
+
         return parent::checkAccess();
     }
 
@@ -60,11 +64,13 @@ class MondialrelayOrdersStatusUpdateModuleFrontController extends CronController
         }
 
         ProcessLoggerHandler::closeLogger();
+
+        return $data;
     }
 
     /**
      * Checks if order statuses were updated from the Mondial Relay API, and
-     * updates our own if needed
+     * updates our own if needed.
      *
      * @return bool
      */
@@ -73,12 +79,13 @@ class MondialrelayOrdersStatusUpdateModuleFrontController extends CronController
         ProcessLoggerHandler::openLogger($this->processMonitor);
         ProcessLoggerHandler::logInfo($this->module->l('Start updating orders...', 'ordersStatusUpdate'));
 
-        $newOrderStateId = (int) Configuration::get(Mondialrelay::OS_ORDER_DELIVERED);
+        $newOrderStateId = (int) Configuration::get(MondialRelay::OS_ORDER_DELIVERED);
         if (!$newOrderStateId) {
             ProcessLoggerHandler::logInfo(
                 $this->module->l('No order status configured for delivered orders; aborting.', 'ordersStatusUpdate')
             );
-            ProcessLoggerHandler::save();
+            ProcessLoggerHandler::saveLogsInDb();
+
             return true;
         }
 
@@ -88,6 +95,7 @@ class MondialrelayOrdersStatusUpdateModuleFrontController extends CronController
                 $this->module->l('No orders to update.', 'ordersStatusUpdate')
             );
             ProcessLoggerHandler::closeLogger();
+
             return true;
         }
 
@@ -112,6 +120,7 @@ class MondialrelayOrdersStatusUpdateModuleFrontController extends CronController
                 ProcessLoggerHandler::logError($error);
             }
             ProcessLoggerHandler::closeLogger();
+
             return false;
         }
 
@@ -121,6 +130,7 @@ class MondialrelayOrdersStatusUpdateModuleFrontController extends CronController
                 ProcessLoggerHandler::logError($error);
             }
             ProcessLoggerHandler::closeLogger();
+
             return false;
         }
 
@@ -159,12 +169,14 @@ class MondialrelayOrdersStatusUpdateModuleFrontController extends CronController
         );
 
         ProcessLoggerHandler::closeLogger();
+
         return true;
     }
 
     /**
      * Each order has its own data an errors set; so we need to assemble the two
-     * to create a common errors array
+     * to create a common errors array.
+     *
      * @param type $data
      * @param type $serviceErrors
      */
@@ -202,17 +214,17 @@ class MondialrelayOrdersStatusUpdateModuleFrontController extends CronController
 
         // Delete unused addresses
         // Get "old" relay selections
-        $tablenameMrSelectedRelay   = _DB_PREFIX_ . 'mondialrelay_selected_relay';
-        $tablenamePsOrders          = _DB_PREFIX_ . 'orders';
-        $paramState                 = (int) Configuration::get(Mondialrelay::OS_ORDER_DELIVERED);
+        $tablenameMrSelectedRelay = _DB_PREFIX_ . 'mondialrelay_selected_relay';
+        $tablenamePsOrders = _DB_PREFIX_ . 'orders';
+        $paramState = (int) Configuration::get(MondialRelay::OS_ORDER_DELIVERED);
 
-        $query = "SELECT mr_sr.* 
-                  FROM `{$tablenameMrSelectedRelay}` mr_sr 
-                  LEFT JOIN `{$tablenamePsOrders}` o ON mr_sr.id_order = o.id_order 
+        $query = "SELECT mr_sr.*
+                  FROM `{$tablenameMrSelectedRelay}` mr_sr
+                  LEFT JOIN `{$tablenamePsOrders}` o ON mr_sr.id_order = o.id_order
                   WHERE (
-                      mr_sr.id_order IS NULL 
-                      AND DATE_ADD(mr_sr.date_upd, INTERVAL 1 DAY) < NOW() 
-                      AND (mr_sr.selected_relay_num IS NOT NULL AND mr_sr.selected_relay_num <> '') 
+                      mr_sr.id_order IS NULL
+                      AND DATE_ADD(mr_sr.date_upd, INTERVAL 1 DAY) < NOW()
+                      AND (mr_sr.selected_relay_num IS NOT NULL AND mr_sr.selected_relay_num <> '')
                   ) OR o.current_state = {$paramState}"
         ;
 
@@ -221,6 +233,7 @@ class MondialrelayOrdersStatusUpdateModuleFrontController extends CronController
             ProcessLoggerHandler::logInfo(
                 $this->module->l('No relay selections to remove.', 'ordersStatusUpdate')
             );
+
             return true;
         }
 
@@ -236,7 +249,7 @@ class MondialrelayOrdersStatusUpdateModuleFrontController extends CronController
             if ($selectedRelay->id_address_delivery
             && !MondialrelaySelectedRelay::isUsedRelayAddress($selectedRelay->id_address_delivery)) {
                 // Delete the address
-                if (\Address::addressExists($selectedRelay->id_address_delivery)) {
+                if (Address::addressExists($selectedRelay->id_address_delivery)) {
                     $address = new Address($selectedRelay->id_address_delivery);
                     $address->delete();
                 }
@@ -266,6 +279,7 @@ class MondialrelayOrdersStatusUpdateModuleFrontController extends CronController
         );
 
         ProcessLoggerHandler::closeLogger();
+
         return true;
     }
 }

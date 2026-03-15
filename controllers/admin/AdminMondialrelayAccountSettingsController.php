@@ -41,19 +41,19 @@ class AdminMondialrelayAccountSettingsController extends AdminMondialrelayContro
             'MONDIALRELAY_ACCOUNTSETTINGS' => [
                 'accountSettingsUrl' => $this->context->link->getAdminLink('AdminMondialrelayAccountSettings'),
                 'checkConnectionFields' => [
-                    Mondialrelay::WEBSERVICE_ENSEIGNE,
-                    Mondialrelay::WEBSERVICE_BRAND_CODE,
-                    Mondialrelay::WEBSERVICE_KEY,
+                    MondialRelay::WEBSERVICE_ENSEIGNE,
+                    MondialRelay::WEBSERVICE_BRAND_CODE,
+                    MondialRelay::WEBSERVICE_KEY,
                 ],
             ],
             'MONDIALRELAY_ACCOUNTSETTINGS_API2' => [
                 'accountSettingsUrl' => $this->context->link->getAdminLink('AdminMondialrelayAccountSettings'),
                 'checkConnectionFields' => [
-                    Mondialrelay::TEST_MODE,
-                    Mondialrelay::API2_LOGIN,
-                    Mondialrelay::API2_PASSWORD,
-                    Mondialrelay::API2_CULTURE,
-                    Mondialrelay::API2_CUSTOMER_ID,
+                    MondialRelay::TEST_MODE,
+                    MondialRelay::API2_LOGIN,
+                    MondialRelay::API2_PASSWORD,
+                    MondialRelay::API2_CULTURE,
+                    MondialRelay::API2_CUSTOMER_ID,
                 ],
             ],
         ]);
@@ -79,7 +79,7 @@ class AdminMondialrelayAccountSettingsController extends AdminMondialrelayContro
                     '</a>'
                 ),
                 'fields' => [
-                    Mondialrelay::HOME_DELIVERY => [
+                    MondialRelay::HOME_DELIVERY => [
                         'type' => 'select',
                         'title' => $this->module->l('Enable home and Poland deliveries? (Refer to your contract for more information)', 'AdminMondialrelayAccountSettingsController'),
                         'required' => false,
@@ -91,7 +91,7 @@ class AdminMondialrelayAccountSettingsController extends AdminMondialrelayContro
                         'identifier' => 'home_delivery',
                         'defaultValue' => 0,
                     ],
-                    Mondialrelay::TEST_MODE => [
+                    MondialRelay::TEST_MODE => [
                         'type' => 'select',
                         'title' => $this->module->l('Activate test mode', 'AdminMondialrelayAccountSettingsController'),
                         'required' => false,
@@ -103,25 +103,25 @@ class AdminMondialrelayAccountSettingsController extends AdminMondialrelayContro
                         'identifier' => 'test_mode',
                         'defaultValue' => 0,
                     ],
-                    Mondialrelay::API2_CUSTOMER_ID => [
+                    MondialRelay::API2_CUSTOMER_ID => [
                         'type' => 'text',
                         'title' => $this->module->l('Brand Id API 2 ', 'AdminMondialrelayAccountSettingsController'),
                         'required' => false,
                         'class' => 'api2_form',
                     ],
-                    Mondialrelay::API2_LOGIN => [
+                    MondialRelay::API2_LOGIN => [
                         'type' => 'text',
                         'title' => $this->module->l('Login API 2', 'AdminMondialrelayAccountSettingsController'),
                         'required' => false,
                         'class' => 'api2_form',
                     ],
-                    Mondialrelay::API2_PASSWORD => [
+                    MondialRelay::API2_PASSWORD => [
                         'type' => 'text',
                         'title' => $this->module->l('Password API 2', 'AdminMondialrelayAccountSettingsController'),
                         'required' => false,
                         'class' => 'api2_form',
                     ],
-                    Mondialrelay::API2_CULTURE => [
+                    MondialRelay::API2_CULTURE => [
                         'type' => 'text',
                         'title' => $this->module->l('Culture API 2', 'AdminMondialrelayAccountSettingsController'),
                         'required' => false,
@@ -136,22 +136,22 @@ class AdminMondialrelayAccountSettingsController extends AdminMondialrelayContro
                         'class' => 'btn-primary api2_form',
                         'no_multishop_checkbox' => true,
                     ],
-                    Mondialrelay::WEBSERVICE_ENSEIGNE => [
+                    MondialRelay::WEBSERVICE_ENSEIGNE => [
                         'type' => 'text',
                         'title' => $this->module->l('Enseigne (brand)', 'AdminMondialrelayAccountSettingsController'),
                         'required' => false,
                     ],
-                    Mondialrelay::WEBSERVICE_BRAND_CODE => [
+                    MondialRelay::WEBSERVICE_BRAND_CODE => [
                         'type' => 'text',
                         'title' => $this->module->l('Brand Code', 'AdminMondialrelayAccountSettingsController'),
                         'required' => false,
                     ],
-                    Mondialrelay::WEBSERVICE_KEY => [
+                    MondialRelay::WEBSERVICE_KEY => [
                         'type' => 'text',
                         'title' => $this->module->l('Private Key', 'AdminMondialrelayAccountSettingsController'),
                         'required' => false,
                     ],
-                    Mondialrelay::LABEL_LANG => [
+                    MondialRelay::LABEL_LANG => [
                         'type' => 'select',
                         'title' => $this->module->l('Labels language', 'AdminMondialrelayAccountSettingsController'),
                         'required' => false,
@@ -163,7 +163,7 @@ class AdminMondialrelayAccountSettingsController extends AdminMondialrelayContro
                         'identifier' => 'iso_code',
                         'defaultValue' => $this->context->language->id,
                     ],
-                    Mondialrelay::WEIGHT_COEFF => [
+                    MondialRelay::WEIGHT_COEFF => [
                         'type' => 'select',
                         'title' => $this->module->l('Unit of Weight', 'AdminMondialrelayAccountSettingsController'),
                         'hint' => $this->module->l('Please choose the unit type of weight measurement using for products in your shop.', 'AdminMondialrelayAccountSettingsController'),
@@ -240,8 +240,8 @@ class AdminMondialrelayAccountSettingsController extends AdminMondialrelayContro
                     }
                 }
 
-                if ($field_name == Mondialrelay::WEBSERVICE_BRAND_CODE && !MondialrelayTools::validateBrandCode(Tools::getValue($field_name))) {
-                    $fieldLabel = $this->fields_options[0]['fields'][Mondialrelay::WEBSERVICE_BRAND_CODE]['title'];
+                if ($field_name == MondialRelay::WEBSERVICE_BRAND_CODE && !MondialRelayTools::validateBrandCode(Tools::getValue($field_name))) {
+                    $fieldLabel = $this->fields_options[0]['fields'][MondialRelay::WEBSERVICE_BRAND_CODE]['title'];
                     $this->errors[] = sprintf(
                         $this->module->l('Field %s is invalid.', 'AdminMondialrelayAccountSettingsController'),
                         $fieldLabel
@@ -254,17 +254,17 @@ class AdminMondialrelayAccountSettingsController extends AdminMondialrelayContro
             $errors = [];
 
             if (!Tools::getValue(MondialRelay::HOME_DELIVERY)) {
-                MondialrelayTools::checkWebserviceConnection(
-                    Tools::getValue(Mondialrelay::WEBSERVICE_ENSEIGNE),
-                    Tools::getValue(Mondialrelay::WEBSERVICE_KEY),
+                MondialRelayTools::checkWebserviceConnection(
+                    Tools::getValue(MondialRelay::WEBSERVICE_ENSEIGNE),
+                    Tools::getValue(MondialRelay::WEBSERVICE_KEY),
                     $errors
                 );
             } else {
                 $client = (new Client())
-                    ->setLogin(Tools::getValue(Mondialrelay::API2_LOGIN))
-                    ->setPassword(Tools::getValue(Mondialrelay::API2_PASSWORD))
-                    ->setCustomerId(Tools::getValue(Mondialrelay::API2_CUSTOMER_ID))
-                    ->setCulture(Tools::getValue(Mondialrelay::API2_CULTURE))
+                    ->setLogin(Tools::getValue(MondialRelay::API2_LOGIN))
+                    ->setPassword(Tools::getValue(MondialRelay::API2_PASSWORD))
+                    ->setCustomerId(Tools::getValue(MondialRelay::API2_CUSTOMER_ID))
+                    ->setCulture(Tools::getValue(MondialRelay::API2_CULTURE))
                 ;
 
                 $request = new TestConnexionRequest($client);
@@ -314,21 +314,21 @@ class AdminMondialrelayAccountSettingsController extends AdminMondialrelayContro
     {
         $this->json = true;
 
-        if (($value = Tools::getValue(Mondialrelay::WEBSERVICE_ENSEIGNE)) == false && (string) $value != '0') {
-            $fieldName = $this->fields_options[0]['fields'][Mondialrelay::WEBSERVICE_ENSEIGNE]['title'];
+        if (($value = Tools::getValue(MondialRelay::WEBSERVICE_ENSEIGNE)) == false && (string) $value != '0') {
+            $fieldName = $this->fields_options[0]['fields'][MondialRelay::WEBSERVICE_ENSEIGNE]['title'];
             $this->jsonError($this->module->l('Field %field% is required.', 'AdminMondialrelayAccountSettingsController', ['%field%' => $fieldName]));
         }
 
-        if (($value = Tools::getValue(Mondialrelay::WEBSERVICE_KEY)) == false && (string) $value != '0') {
-            $fieldName = $this->fields_options[0]['fields'][Mondialrelay::WEBSERVICE_KEY]['title'];
+        if (($value = Tools::getValue(MondialRelay::WEBSERVICE_KEY)) == false && (string) $value != '0') {
+            $fieldName = $this->fields_options[0]['fields'][MondialRelay::WEBSERVICE_KEY]['title'];
             $this->jsonError($this->module->l('Field %field% is required.', 'AdminMondialrelayAccountSettingsController', ['%field%' => $fieldName]));
         }
 
-        if (($value = Tools::getValue(Mondialrelay::WEBSERVICE_BRAND_CODE)) == false && (string) $value != '0') {
-            $fieldName = $this->fields_options[0]['fields'][Mondialrelay::WEBSERVICE_BRAND_CODE]['title'];
+        if (($value = Tools::getValue(MondialRelay::WEBSERVICE_BRAND_CODE)) == false && (string) $value != '0') {
+            $fieldName = $this->fields_options[0]['fields'][MondialRelay::WEBSERVICE_BRAND_CODE]['title'];
             $this->jsonError($this->module->l('Field %field% is required.', 'AdminMondialrelayAccountSettingsController', ['%field%' => $fieldName]));
-        } elseif (!MondialrelayTools::validateBrandCode(Tools::getValue(Mondialrelay::WEBSERVICE_BRAND_CODE))) {
-            $fieldName = $this->fields_options[0]['fields'][Mondialrelay::WEBSERVICE_BRAND_CODE]['title'];
+        } elseif (!MondialRelayTools::validateBrandCode(Tools::getValue(MondialRelay::WEBSERVICE_BRAND_CODE))) {
+            $fieldName = $this->fields_options[0]['fields'][MondialRelay::WEBSERVICE_BRAND_CODE]['title'];
             $this->jsonError($this->module->l('Field %field% is invalid.', 'AdminMondialrelayAccountSettingsController', ['%field%' => $fieldName]));
         }
 
@@ -339,9 +339,9 @@ class AdminMondialrelayAccountSettingsController extends AdminMondialrelayContro
         }
 
         $errors = [];
-        if (MondialrelayTools::checkWebserviceConnection(
-            Tools::getValue(Mondialrelay::WEBSERVICE_ENSEIGNE),
-            Tools::getValue(Mondialrelay::WEBSERVICE_KEY),
+        if (MondialRelayTools::checkWebserviceConnection(
+            Tools::getValue(MondialRelay::WEBSERVICE_ENSEIGNE),
+            Tools::getValue(MondialRelay::WEBSERVICE_KEY),
             $errors
         )) {
             echo json_encode([
@@ -367,30 +367,30 @@ class AdminMondialrelayAccountSettingsController extends AdminMondialrelayContro
     public function ajaxProcessCheckConnectionApi2()
     {
         $this->json = true;
-        if (($value = Tools::getValue(Mondialrelay::API2_LOGIN)) == false && (string) $value != '0') {
-            $fieldName = $this->fields_options[0]['fields'][Mondialrelay::API2_LOGIN]['title'];
+        if (($value = Tools::getValue(MondialRelay::API2_LOGIN)) == false && (string) $value != '0') {
+            $fieldName = $this->fields_options[0]['fields'][MondialRelay::API2_LOGIN]['title'];
             $this->jsonError($this->module->l('Field %field% is required.', 'AdminMondialrelayAccountSettingsController', ['%field%' => $fieldName]));
         }
 
-        if (($value = Tools::getValue(Mondialrelay::API2_PASSWORD)) == false && (string) $value != '0') {
-            $fieldName = $this->fields_options[0]['fields'][Mondialrelay::API2_PASSWORD]['title'];
+        if (($value = Tools::getValue(MondialRelay::API2_PASSWORD)) == false && (string) $value != '0') {
+            $fieldName = $this->fields_options[0]['fields'][MondialRelay::API2_PASSWORD]['title'];
             $this->jsonError($this->module->l('Field %field% is required.', 'AdminMondialrelayAccountSettingsController', ['%field%' => $fieldName]));
         }
 
-        if (($value = Tools::getValue(Mondialrelay::API2_CUSTOMER_ID)) == false && (string) $value != '0') {
-            $fieldName = $this->fields_options[0]['fields'][Mondialrelay::API2_CUSTOMER_ID]['title'];
+        if (($value = Tools::getValue(MondialRelay::API2_CUSTOMER_ID)) == false && (string) $value != '0') {
+            $fieldName = $this->fields_options[0]['fields'][MondialRelay::API2_CUSTOMER_ID]['title'];
             $this->jsonError($this->module->l('Field %field% is required.', 'AdminMondialrelayAccountSettingsController', ['%field%' => $fieldName]));
         }
-        if (($value = Tools::getValue(Mondialrelay::API2_CULTURE)) == false && (string) $value != '0') {
-            $fieldName = $this->fields_options[0]['fields'][Mondialrelay::API2_CULTURE]['title'];
+        if (($value = Tools::getValue(MondialRelay::API2_CULTURE)) == false && (string) $value != '0') {
+            $fieldName = $this->fields_options[0]['fields'][MondialRelay::API2_CULTURE]['title'];
             $this->jsonError($this->module->l('Field %field% is required.', 'AdminMondialrelayAccountSettingsController', ['%field%' => $fieldName]));
         }
 
         $client = (new Client())
-            ->setLogin(Tools::getValue(Mondialrelay::API2_LOGIN))
-            ->setPassword(Tools::getValue(Mondialrelay::API2_PASSWORD))
-            ->setCustomerId(Tools::getValue(Mondialrelay::API2_CUSTOMER_ID))
-            ->setCulture(Tools::getValue(Mondialrelay::API2_CULTURE))
+            ->setLogin(Tools::getValue(MondialRelay::API2_LOGIN))
+            ->setPassword(Tools::getValue(MondialRelay::API2_PASSWORD))
+            ->setCustomerId(Tools::getValue(MondialRelay::API2_CUSTOMER_ID))
+            ->setCulture(Tools::getValue(MondialRelay::API2_CULTURE))
         ;
 
         $request = new TestConnexionRequest($client);

@@ -1,11 +1,14 @@
 <?php
-/**
- * NOTICE OF LICENSE
+/*
+ * This file is part of Simple Carrier module
  *
- * @author Mondial Relay <offrestart@mondialrelay.fr>
- * @copyright Copyright (c) Mondial Relay
- * @license http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * Copyright(c) Nicolas Roudaire  https://www.une-ruche-en-brie.fr/
+ * Licensed under the OSL version 3.0 license.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
+
 use MondialrelayClasslib\Actions\DefaultActions;
 use MondialrelayClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
 
@@ -42,6 +45,7 @@ class SelectRelayActions extends DefaultActions
             }
             $this->conveyor['errors'] = $errors;
             ProcessLoggerHandler::saveLogsInDb();
+
             return false;
         }
 
@@ -53,6 +57,7 @@ class SelectRelayActions extends DefaultActions
             }
             $this->conveyor['errors'] = $errors;
             ProcessLoggerHandler::saveLogsInDb();
+
             return false;
         }
 
@@ -63,6 +68,7 @@ class SelectRelayActions extends DefaultActions
             $error = $service->getErrorFromStatCode($result[0]->STAT);
             ProcessLoggerHandler::logError($error);
             $this->conveyor['errors'][] = $error;
+
             return false;
         }
 
@@ -74,6 +80,7 @@ class SelectRelayActions extends DefaultActions
             ProcessLoggerHandler::logError($error);
             $this->conveyor['errors'][] = $error;
             ProcessLoggerHandler::saveLogsInDb();
+
             return false;
         }
 
@@ -100,6 +107,7 @@ class SelectRelayActions extends DefaultActions
             ProcessLoggerHandler::logError($error);
             $this->conveyor['errors'][] = $error;
             ProcessLoggerHandler::saveLogsInDb();
+
             return false;
         }
 
@@ -109,6 +117,7 @@ class SelectRelayActions extends DefaultActions
             ProcessLoggerHandler::logError($error, Cart::class, $cart->id);
             $this->conveyor['errors'][] = $error;
             ProcessLoggerHandler::saveLogsInDb();
+
             return false;
         }
 
@@ -117,6 +126,7 @@ class SelectRelayActions extends DefaultActions
             ProcessLoggerHandler::logError($error, Cart::class, $cart->id);
             $this->conveyor['errors'][] = $error;
             ProcessLoggerHandler::saveLogsInDb();
+
             return false;
         }
         $relayInfos = $this->conveyor['relayInfos'];
@@ -228,6 +238,7 @@ class SelectRelayActions extends DefaultActions
             ProcessLoggerHandler::logError($error, Cart::class, $cart->id);
             $this->conveyor['errors'][] = $error;
             ProcessLoggerHandler::saveLogsInDb();
+
             return false;
         }
 
@@ -246,6 +257,7 @@ class SelectRelayActions extends DefaultActions
                 ProcessLoggerHandler::logError($error, Cart::class, $cart->id);
                 $this->conveyor['errors'][] = $error;
                 ProcessLoggerHandler::saveLogsInDb();
+
                 return false;
             }
         }
@@ -253,12 +265,13 @@ class SelectRelayActions extends DefaultActions
         $this->conveyor['selectedRelay'] = $selectedRelay;
 
         // Update the delivery address...
-        MondialrelayTools::setCartDeliveryAddress($cart, $selectedRelay->id_address_delivery);
+        MondialRelayTools::setCartDeliveryAddress($cart, $selectedRelay->id_address_delivery);
         if (!$cart->save()) {
             $error = $this->l('Could not update cart with the selected Point Relais® address.', 'SelectRelayActions');
             ProcessLoggerHandler::logError($error, Cart::class, $cart->id);
             $this->conveyor['errors'][] = $error;
             ProcessLoggerHandler::saveLogsInDb();
+
             return false;
         }
 
@@ -275,6 +288,7 @@ class SelectRelayActions extends DefaultActions
             ProcessLoggerHandler::logError($error, Cart::class, $cart->id);
             $this->conveyor['errors'][] = $error;
             ProcessLoggerHandler::saveLogsInDb();
+
             return false;
         }
 
@@ -286,6 +300,7 @@ class SelectRelayActions extends DefaultActions
                 ProcessLoggerHandler::logError($error, Cart::class, $cart->id);
                 $this->conveyor['errors'][] = $error;
                 ProcessLoggerHandler::saveLogsInDb();
+
                 return false;
             }
             $order->id_address_delivery = $selectedRelay->id_address_delivery;
@@ -294,6 +309,7 @@ class SelectRelayActions extends DefaultActions
                 ProcessLoggerHandler::logError($error, Cart::class, $cart->id);
                 $this->conveyor['errors'][] = $error;
                 ProcessLoggerHandler::saveLogsInDb();
+
                 return false;
             }
         }
@@ -307,6 +323,7 @@ class SelectRelayActions extends DefaultActions
      * cart. When started again, it checks the checksum and reinitializes the
      * checkout process if it doesn't match. So we have to regerenate the
      * checksum if we update the cart outside of the OrderController process.
+     *
      * @return bool
      */
     public function updateCartChecksum()
@@ -318,6 +335,7 @@ class SelectRelayActions extends DefaultActions
         $cart = $this->conveyor['cart'];
         if (!Validate::isLoadedObject($cart)) {
             $this->conveyor['errors'][] = $this->l('Invalid Cart ID', 'SelectRelayActions');
+
             return false;
         }
 
@@ -330,6 +348,7 @@ class SelectRelayActions extends DefaultActions
 
         if (!$rawData) {
             $this->conveyor['errors'][] = $this->l('Could not retrieve checkout session data from cart.', 'SelectRelayActions');
+
             return false;
         }
 
@@ -344,6 +363,7 @@ class SelectRelayActions extends DefaultActions
 
         if (!$updateResult) {
             $this->conveyor['errors'][] = $this->l('Could not update cart checkout session data.', 'SelectRelayActions');
+
             return false;
         }
 
@@ -359,18 +379,21 @@ class SelectRelayActions extends DefaultActions
         $cart = $this->conveyor['cart'];
         if (!Validate::isLoadedObject($cart)) {
             $this->conveyor['errors'][] = $this->l('Invalid Cart object', 'SelectRelayActions');
+
             return false;
         }
 
         $selectedRelay = $this->conveyor['selectedRelay'];
         if (!Validate::isLoadedObject($selectedRelay)) {
             $this->conveyor['errors'][] = $this->l('Invalid MondialrelaySelectedRelay object', 'SelectRelayActions');
+
             return false;
         }
 
         $delivery_option = $this->conveyor['deliveryOption'];
         if (empty($delivery_option) || !is_array($delivery_option)) {
             $this->conveyor['errors'][] = $this->l('Invalid delivery option', 'SelectRelayActions');
+
             return false;
         }
 
@@ -398,7 +421,7 @@ class SelectRelayActions extends DefaultActions
             // If we're trying to use an MR address
             if ($delivery_option_address_id == $selectedRelay->id_address_delivery) {
                 // Make sure the cart is using our relay delivery address
-                MondialrelayTools::setCartDeliveryAddress($cart, $selectedRelay->id_address_delivery);
+                MondialRelayTools::setCartDeliveryAddress($cart, $selectedRelay->id_address_delivery);
                 $cart->save();
 
                 // Refresh the cache...
@@ -413,7 +436,7 @@ class SelectRelayActions extends DefaultActions
                 // If we're trying to use a non-MR address
                 // Use our relay delivery address anyway, we're not going to
                 // use a non-MR address as a relay
-                MondialrelayTools::setCartDeliveryAddress($cart, $selectedRelay->id_address_delivery);
+                MondialRelayTools::setCartDeliveryAddress($cart, $selectedRelay->id_address_delivery);
                 $cart->save();
 
                 // Refresh the cache...
@@ -446,7 +469,7 @@ class SelectRelayActions extends DefaultActions
                 }
 
                 if ($new_delivery_address_id) {
-                    MondialrelayTools::setCartDeliveryAddress($cart, $new_delivery_address_id);
+                    MondialRelayTools::setCartDeliveryAddress($cart, $new_delivery_address_id);
                     $cart->save();
 
                     // Refresh the cache...
@@ -472,7 +495,7 @@ class SelectRelayActions extends DefaultActions
                     // We need to update the cart with the delivery option's
                     // address; we might have replaced it with our relay's
                     // address before
-                    MondialrelayTools::setCartDeliveryAddress($cart, $delivery_option_address_id);
+                    MondialRelayTools::setCartDeliveryAddress($cart, $delivery_option_address_id);
                     $cart->save();
 
                     // Refresh the cache...
@@ -485,7 +508,7 @@ class SelectRelayActions extends DefaultActions
                     // We need to update the cart with a valid delivery option,
                     // the delivery option with the deleted address was
                     // probably added in the cart...
-                    MondialrelayTools::setCartDeliveryAddress($cart, $cart->id_address_delivery);
+                    MondialRelayTools::setCartDeliveryAddress($cart, $cart->id_address_delivery);
                     $cart->save();
 
                     $delivery_option[$cart->id_address_delivery] =
@@ -528,9 +551,7 @@ class SelectRelayActions extends DefaultActions
     }
 
     /**
-     * @param $address
      * @param $cart object PS Cart
-     * @param $relayInfos
      */
     protected function setAddressFields($address, $cart, $relayInfos)
     {
@@ -605,7 +626,8 @@ class SelectRelayActions extends DefaultActions
     /**
      * The service may return errors for the whole service, or for specific
      * items. Since we only use one item at a time when selecting a relay, we
-     * just need to flatten the returned error array
+     * just need to flatten the returned error array.
+     *
      * @param array $serviceErrors
      */
     protected function flattenServiceErrors($serviceErrors)
@@ -620,6 +642,7 @@ class SelectRelayActions extends DefaultActions
 
         // Make sure generic errors are at the end
         $errors = array_merge($errors, $genericErrors);
+
         return $errors;
     }
 }

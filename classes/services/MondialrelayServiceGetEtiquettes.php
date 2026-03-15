@@ -1,11 +1,14 @@
 <?php
-/**
- * NOTICE OF LICENSE
+/*
+ * This file is part of Simple Carrier module
  *
- * @author Mondial Relay <offrestart@mondialrelay.fr>
- * @copyright Copyright (c) Mondial Relay
- * @license http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * Copyright(c) Nicolas Roudaire  https://www.une-ruche-en-brie.fr/
+ * Licensed under the OSL version 3.0 license.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
+
 require_once _PS_MODULE_DIR_ . '/mondialrelay/classes/services/MondialrelayService.php';
 
 if (!defined('_PS_VERSION_')) {
@@ -14,14 +17,8 @@ if (!defined('_PS_VERSION_')) {
 
 class MondialrelayServiceGetEtiquettes extends MondialrelayService
 {
-    /**
-     * {@inheritDoc}
-     */
     protected $function = 'WSI3_GetEtiquettes';
 
-    /**
-     * {@inheritDoc}
-     */
     protected $fields = [
         'Enseigne' => [
             'required' => true,
@@ -56,29 +53,25 @@ class MondialrelayServiceGetEtiquettes extends MondialrelayService
      */
     protected $webservice_Langue = '';
 
-    /**
-     * {@inheritDoc}
-     */
     protected function __construct()
     {
         parent::__construct();
-        $this->webservice_Langue = Configuration::get(Mondialrelay::LABEL_LANG);
+        $this->webservice_Langue = Configuration::get(MondialRelay::LABEL_LANG);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function init($data)
     {
         $this->data = $data;
+
         return $this->setPayloadFromData();
     }
 
     /**
-     * Preprocess a data item
+     * Preprocess a data item.
      *
-     * @param int $key
+     * @param int   $key
      * @param array $item
+     *
      * @return array the preprocessed item
      */
     protected function preprocessData($key, $item)
@@ -99,9 +92,6 @@ class MondialrelayServiceGetEtiquettes extends MondialrelayService
         return Tools::strtoupper($value);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     protected function parseResult($soapClient, $result, $key)
     {
         $this->result[$key] = $result->{$this->function . 'Result'};

@@ -1,25 +1,12 @@
 <?php
-/**
- * NOTICE OF LICENSE
+/*
+ * This file is part of Simple Carrier module
  *
- * This source file is subject to a commercial license from ScaleDEV.
- * Use, copy, modification or distribution of this source file without written
- * license agreement from ScaleDEV is strictly forbidden.
- * In order to obtain a license, please contact us: contact@scaledev.fr
- * ...........................................................................
- * INFORMATION SUR LA LICENCE D'UTILISATION
+ * Copyright(c) Nicolas Roudaire  https://www.une-ruche-en-brie.fr/
+ * Licensed under the OSL version 3.0 license.
  *
- * L'utilisation de ce fichier source est soumise à une licence commerciale
- * concédée par la société ScaleDEV.
- * Toute utilisation, reproduction, modification ou distribution du présent
- * fichier source sans contrat de licence écrit de la part de ScaleDEV est
- * expressément interdite.
- * Pour obtenir une licence, veuillez nous contacter : contact@scaledev.fr
- * ...........................................................................
- * @author ScaleDEV <contact@scaledev.fr>
- * @copyright Copyright (c) ScaleDEV - 12 RUE CHARLES MORET - 10120 SAINT-ANDRE-LES-VERGERS - FRANCE
- * @license Commercial license
- * Support: support@scaledev.fr
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace MondialRelay\MondialRelay\Api\Builder\Model;
@@ -36,7 +23,7 @@ if (!defined('_PS_VERSION_')) {
 }
 
 /**
- * Class ShipmentsListBuilder
+ * Class ShipmentsListBuilder.
  *
  * @author Fabien Sigrand <contact@scaledev.fr>
  */
@@ -242,7 +229,7 @@ final class ShipmentsListBuilder
             ->setCity(\Tools::replaceAccentedChars(\Configuration::get('PS_SHOP_CITY')))
             ->setAddressAdd1(\Tools::replaceAccentedChars(\Configuration::get('PS_SHOP_NAME')))
             ->setAddressAdd3(\Tools::replaceAccentedChars(\Configuration::get('PS_SHOP_ADDR1')))
-            ->setPhoneNo(\MondialrelayTools::getFormattedPhonenumber(\Configuration::get('PS_SHOP_PHONE')))
+            ->setPhoneNo(\MondialRelayTools::getFormattedPhonenumber(\Configuration::get('PS_SHOP_PHONE')))
             ->setEmail(\Configuration::get('PS_SHOP_EMAIL'))
         ;
 
@@ -315,7 +302,7 @@ final class ShipmentsListBuilder
     }
 
     /**
-     * Get the value of recipient
+     * Get the value of recipient.
      */
     public function getRecipient()
     {
@@ -323,7 +310,7 @@ final class ShipmentsListBuilder
     }
 
     /**
-     * Set the value of recipient
+     * Set the value of recipient.
      *
      * @return self
      */
@@ -335,7 +322,7 @@ final class ShipmentsListBuilder
     }
 
     /**
-     * Get the value of sender
+     * Get the value of sender.
      */
     public function getSender()
     {
@@ -343,7 +330,7 @@ final class ShipmentsListBuilder
     }
 
     /**
-     * Set the value of sender
+     * Set the value of sender.
      *
      * @return self
      */
@@ -355,7 +342,7 @@ final class ShipmentsListBuilder
     }
 
     /**
-     * Get the value of deliveryInstruction
+     * Get the value of deliveryInstruction.
      */
     public function getDeliveryInstruction()
     {
@@ -363,7 +350,7 @@ final class ShipmentsListBuilder
     }
 
     /**
-     * Set the value of deliveryInstruction
+     * Set the value of deliveryInstruction.
      *
      * @return self
      */
@@ -377,7 +364,7 @@ final class ShipmentsListBuilder
     }
 
     /**
-     * Get the value of parcels
+     * Get the value of parcels.
      */
     public function getParcels()
     {
@@ -385,7 +372,7 @@ final class ShipmentsListBuilder
     }
 
     /**
-     * Set the value of parcels
+     * Set the value of parcels.
      *
      * @return self
      */
@@ -397,7 +384,7 @@ final class ShipmentsListBuilder
     }
 
     /**
-     * Get the value of collectionMode
+     * Get the value of collectionMode.
      */
     public function getCollectionMode()
     {
@@ -405,7 +392,7 @@ final class ShipmentsListBuilder
     }
 
     /**
-     * Set the value of collectionMode
+     * Set the value of collectionMode.
      *
      * @return self
      */
@@ -417,7 +404,7 @@ final class ShipmentsListBuilder
     }
 
     /**
-     * Get the value of deliveryMode
+     * Get the value of deliveryMode.
      */
     public function getDeliveryMode()
     {
@@ -425,7 +412,7 @@ final class ShipmentsListBuilder
     }
 
     /**
-     * Set the value of deliveryMode
+     * Set the value of deliveryMode.
      *
      * @return self
      */
@@ -437,7 +424,7 @@ final class ShipmentsListBuilder
     }
 
     /**
-     * Get the value of parcelCount
+     * Get the value of parcelCount.
      */
     public function getParcelCount()
     {
@@ -445,7 +432,7 @@ final class ShipmentsListBuilder
     }
 
     /**
-     * Set the value of parcelCount
+     * Set the value of parcelCount.
      *
      * @return self
      */
@@ -454,11 +441,12 @@ final class ShipmentsListBuilder
         if (preg_match('/^[0-9]{1,2}$/', $parcelCount)) {
             $this->parcelCount = $parcelCount;
         }
+
         return $this;
     }
 
     /**
-     * Get the value of customerNo
+     * Get the value of customerNo.
      */
     public function getCustomerNo()
     {
@@ -466,7 +454,7 @@ final class ShipmentsListBuilder
     }
 
     /**
-     * Set the value of customerNo
+     * Set the value of customerNo.
      *
      * @return self
      */
@@ -480,7 +468,7 @@ final class ShipmentsListBuilder
     }
 
     /**
-     * Get the value of orderNo
+     * Get the value of orderNo.
      */
     public function getOrderNo()
     {
@@ -488,7 +476,7 @@ final class ShipmentsListBuilder
     }
 
     /**
-     * Set the value of orderNo
+     * Set the value of orderNo.
      *
      * @return self
      */
@@ -505,6 +493,7 @@ final class ShipmentsListBuilder
      * Gets the webservice "ModeLiv" parameter's value.
      *
      * @param string $deliveryMode
+     *
      * @return string
      */
     private function getWebserviceModeLiv($deliveryMode)
@@ -516,7 +505,7 @@ final class ShipmentsListBuilder
     }
 
     /**
-     * Get the value of option
+     * Get the value of option.
      */
     public function getOption()
     {
@@ -524,7 +513,7 @@ final class ShipmentsListBuilder
     }
 
     /**
-     * Set the value of option
+     * Set the value of option.
      *
      * @return self
      */

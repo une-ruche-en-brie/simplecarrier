@@ -1,11 +1,14 @@
 <?php
-/**
- * NOTICE OF LICENSE
+/*
+ * This file is part of Simple Carrier module
  *
- * @author Mondial Relay <offrestart@mondialrelay.fr>
- * @copyright Copyright (c) Mondial Relay
- * @license http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * Copyright(c) Nicolas Roudaire  https://www.une-ruche-en-brie.fr/
+ * Licensed under the OSL version 3.0 license.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
+
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -18,14 +21,11 @@ use MondialRelay\MondialRelay\Api\Builder\Model\LabelsUrlBuilder;
 
 class AdminMondialrelayLabelsHistoryController extends AdminMondialrelayController
 {
-    /**
-     * {@inheritDoc}
-     */
     protected $with_mondialrelay_header = false;
 
     /**
      * {@inheritDoc}
-     * We don't want a link on whole lines
+     * We don't want a link on whole lines.
      */
     protected $list_no_link = true;
 
@@ -158,8 +158,10 @@ class AdminMondialrelayLabelsHistoryController extends AdminMondialrelayControll
                 'label_url' => preg_replace('#format=.*?(&|$)#', 'format=' . $format . '$1', $url),
             ])->fetch();
     }
+
     /**
-     * Display "delete" action link
+     * Display "delete" action link.
+     *
      * @see HelperList::displayListContent
      */
     public function displayDeleteFromHistoryLink($token, $id, $name = null)
@@ -170,12 +172,10 @@ class AdminMondialrelayLabelsHistoryController extends AdminMondialrelayControll
             'href' => $this->context->link->getAdminLink('AdminMondialrelayLabelsHistory')
                     . '&deleteFromHistory&' . MondialrelaySelectedRelay::$definition['primary'] . '=' . $id,
         ]);
+
         return $tpl->fetch();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function setHelperDisplay(Helper $helper)
     {
         parent::setHelperDisplay($helper);
@@ -217,6 +217,7 @@ class AdminMondialrelayLabelsHistoryController extends AdminMondialrelayControll
 
         if (empty($selectionIds)) {
             $this->errors[] = $this->module->l('No orders selected.', 'AdminMondialrelayLabelsHistoryController');
+
             return false;
         }
 
@@ -257,6 +258,7 @@ class AdminMondialrelayLabelsHistoryController extends AdminMondialrelayControll
             if (Configuration::get(MondialRelay::HOME_DELIVERY)) {
                 $url = LabelsUrlBuilder::build($expeditionNumbers, $format);
                 Tools::redirect($url);
+
                 return false;
             }
 
@@ -268,6 +270,7 @@ class AdminMondialrelayLabelsHistoryController extends AdminMondialrelayControll
                 $this->errors = array_merge($this->errors, $errors[0]);
                 $this->errors = array_merge($this->errors, $errors['generic']);
                 $this->warnings[] = $this->module->l('Please [a] Check requirements [/a] to verify if all settings are OK.', 'AdminMondialrelayLabelsGenerationController', ['href' => $this->context->link->getAdminLink('AdminMondialrelayHelp') . '#mondialrelay_requirements-results', 'target' => 'blank']);
+
                 return false;
             }
 
@@ -277,6 +280,7 @@ class AdminMondialrelayLabelsHistoryController extends AdminMondialrelayControll
                 $this->errors = array_merge($this->errors, $errors[0]);
                 $this->errors = array_merge($this->errors, $errors['generic']);
                 $this->warnings[] = $this->module->l('Please [a] Check requirements [/a] to verify if all settings are OK.', 'AdminMondialrelayLabelsGenerationController', ['href' => $this->context->link->getAdminLink('AdminMondialrelayHelp') . '#mondialrelay_requirements-results', 'target' => 'blank']);
+
                 return false;
             }
 
@@ -290,22 +294,26 @@ class AdminMondialrelayLabelsHistoryController extends AdminMondialrelayControll
                     $service->getErrorFromStatCode($statCode)
                 );
                 $this->warnings[] = $this->module->l('Please [a] Check requirements [/a] to verify if all settings are OK.', 'AdminMondialrelayLabelsGenerationController', ['href' => $this->context->link->getAdminLink('AdminMondialrelayHelp') . '#mondialrelay_requirements-results', 'target' => 'blank']);
+
                 return false;
             }
 
             switch ($format) {
                 case 'a4':
-                    Tools::redirect(Mondialrelay::URL_DOMAIN . $result[0]->URL_PDF_A4);
+                    Tools::redirect(MondialRelay::URL_DOMAIN . $result[0]->URL_PDF_A4);
+
                     return false;
                 case 'a5':
-                    Tools::redirect(Mondialrelay::URL_DOMAIN . $result[0]->URL_PDF_A5);
+                    Tools::redirect(MondialRelay::URL_DOMAIN . $result[0]->URL_PDF_A5);
+
                     return false;
                 case '10x15':
-                    Tools::redirect(Mondialrelay::URL_DOMAIN . $result[0]->URL_PDF_10x15);
+                    Tools::redirect(MondialRelay::URL_DOMAIN . $result[0]->URL_PDF_10x15);
+
                     return false;
             }
         } catch (Exception $e) {
-            if (isset($service)) {
+            if ($service) {
                 $errors = $service->getErrors();
                 $this->errors = array_merge($this->errors, $errors[0]);
                 $this->errors = array_merge($this->errors, $errors['generic']);
@@ -313,6 +321,7 @@ class AdminMondialrelayLabelsHistoryController extends AdminMondialrelayControll
 
             $this->errors[] = $e->getMessage();
             $this->warnings[] = $this->module->l('Please [a] Check requirements [/a] to verify if all settings are OK.', 'AdminMondialrelayLabelsGenerationController', ['href' => $this->context->link->getAdminLink('AdminMondialrelayHelp') . '#mondialrelay_requirements-results', 'target' => 'blank']);
+
             return false;
         }
 
@@ -325,6 +334,7 @@ class AdminMondialrelayLabelsHistoryController extends AdminMondialrelayControll
 
         if (empty($selectionIds)) {
             $this->errors[] = $this->module->l('No orders selected.', 'AdminMondialrelayLabelsHistoryController');
+
             return false;
         }
 
@@ -347,6 +357,7 @@ class AdminMondialrelayLabelsHistoryController extends AdminMondialrelayControll
         }
 
         $this->confirmations[] = $this->module->l('Selected label(s) has been deleted successfully.', 'AdminMondialrelayLabelsHistoryController');
+
         return true;
     }
 
@@ -357,6 +368,7 @@ class AdminMondialrelayLabelsHistoryController extends AdminMondialrelayControll
         );
         if (!Validate::isLoadedObject($selectedRelay)) {
             $this->errors[] = Tools::displayError('The object cannot be loaded (or found)');
+
             return false;
         }
 

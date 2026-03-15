@@ -12,6 +12,7 @@ jobs:
     strategy:
       matrix:
         php: [ '8.1', '8.2', '8.3', '8.4' ]
+        prestashop-versions: ['1.9.0.3', 'latest']
       fail-fast: false
 
     steps:
@@ -23,12 +24,18 @@ jobs:
           coverage: xdebug
           extensions: mbstring, intl, gd, xml, dom, json, fileinfo, curl, zip, iconv, simplexml
 
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Install dependencies
         run: |
           composer install --ansi --prefer-dist --no-interaction --no-progress
           rm composer.lock
           composer config platform.php ${{ matrix.php }}
 
+      - name: Pull PrestaShop files (Tag ${{ matrix.prestashop-versions }})
+        run: docker run -tid --rm -v ps-volume:/var/www/html --name temp-ps prestashop/prestashop:${{ matrix.presta-versions }}
+
       - name: Run PHPStan
-        run: composer phpstan
+        run: _PS_ROOT_DIR_=/var/www/html composer phpstan
 

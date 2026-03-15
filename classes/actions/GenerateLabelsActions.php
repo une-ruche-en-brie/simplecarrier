@@ -1,11 +1,14 @@
 <?php
-/**
- * NOTICE OF LICENSE
+/*
+ * This file is part of Simple Carrier module
  *
- * @author Mondial Relay <offrestart@mondialrelay.fr>
- * @copyright Copyright (c) Mondial Relay
- * @license http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * Copyright(c) Nicolas Roudaire  https://www.une-ruche-en-brie.fr/
+ * Licensed under the OSL version 3.0 license.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
+
 use MondialrelayClasslib\Actions\ActionsHandler;
 use MondialrelayClasslib\Actions\DefaultActions;
 use MondialrelayClasslib\Extensions\ProcessLogger\ProcessLoggerHandler;
@@ -17,7 +20,8 @@ if (!defined('_PS_VERSION_')) {
 class GenerateLabelsActions extends DefaultActions
 {
     /**
-     * Prepares data for a call to the webservice, using an array of id_order
+     * Prepares data for a call to the webservice, using an array of id_order.
+     *
      * @return bool
      */
     public function prepareData()
@@ -29,6 +33,7 @@ class GenerateLabelsActions extends DefaultActions
         $order_ids = $this->conveyor['order_ids'];
         if (empty($order_ids)) {
             $this->conveyor['errors'][] = $this->l('No data to prepare.', 'GenerateLabelsActions');
+
             return false;
         }
 
@@ -82,7 +87,7 @@ class GenerateLabelsActions extends DefaultActions
 
                         // Set input data
                         $handler->setConveyor([
-                            'enseigne' => Configuration::get(Mondialrelay::WEBSERVICE_ENSEIGNE),
+                            'enseigne' => Configuration::get(MondialRelay::WEBSERVICE_ENSEIGNE),
                             'country_iso' => $selectedRelay->selected_relay_country_iso,
                             'relayNumber' => $selectedRelay->selected_relay_num,
                             'carrierMethod' => $carrierMethod,
@@ -164,7 +169,7 @@ class GenerateLabelsActions extends DefaultActions
                     'ModeLiv' => $this->getWebserviceModeLiv($carrierMethod->delivery_mode),
                     'NDossier' => $order->id,
                     'NClient' => $customer->id,
-                    'Dest_Ad1' => MondialrelayTools::remove_accents(Tools::substr($address->firstname . ' ' . $address->lastname, 0, 32)),
+                    'Dest_Ad1' => MondialRelayTools::remove_accents(Tools::substr($address->firstname . ' ' . $address->lastname, 0, 32)),
                     'Dest_Ad2' => $selectedRelay->selected_relay_adr1,
                     'Dest_Ad3' => $selectedRelay->selected_relay_adr2 ?: $selectedRelay->selected_relay_adr3,
                     'Dest_Ad4' => $selectedRelay->selected_relay_adr2 && $selectedRelay->selected_relay_adr3 ? $selectedRelay->selected_relay_adr3 : $selectedRelay->selected_relay_adr4,
@@ -219,11 +224,8 @@ class GenerateLabelsActions extends DefaultActions
             }
 
             // We add the destination language.
-            if (isset($dataLine) && is_array($dataLine) && !empty($dataLine)
-                && isset($dataLine['Dest_CP'])
-                && isset($dataLine['Dest_Pays'])
-            ) {
-                $dataLine['Dest_Langage'] = MondialrelayTools::getLanguageByPostCode(
+            if (isset($dataLine['Dest_CP']) && isset($dataLine['Dest_Pays'])) {
+                $dataLine['Dest_Langage'] = MondialRelayTools::getLanguageByPostCode(
                     $dataLine['Dest_CP'],
                     $dataLine['Dest_Pays']
                 );
@@ -233,6 +235,7 @@ class GenerateLabelsActions extends DefaultActions
         }
 
         $this->conveyor['preparedData'] = $data;
+
         return true;
     }
 
@@ -244,6 +247,7 @@ class GenerateLabelsActions extends DefaultActions
 
         if (empty($this->conveyor['preparedData'])) {
             $this->conveyor['errors'][] = $this->l('No data to send.', 'GenerateLabelsActions');
+
             return false;
         }
 
@@ -262,6 +266,7 @@ class GenerateLabelsActions extends DefaultActions
                     $this->conveyor['errors'][] = $error;
                 }
                 ProcessLoggerHandler::saveLogsInDb();
+
                 return false;
             }
 
@@ -269,6 +274,7 @@ class GenerateLabelsActions extends DefaultActions
             if (!$service->init($this->conveyor['preparedData'])) {
                 $this->setErrorsFromService($this->conveyor['preparedData'], $service->getErrors());
                 ProcessLoggerHandler::saveLogsInDb();
+
                 return false;
             }
 
@@ -276,6 +282,7 @@ class GenerateLabelsActions extends DefaultActions
             if (!$service->send()) {
                 $this->setErrorsFromService($this->conveyor['preparedData'], $service->getErrors());
                 ProcessLoggerHandler::saveLogsInDb();
+
                 return false;
             }
 
@@ -330,12 +337,12 @@ class GenerateLabelsActions extends DefaultActions
 
                 $selectedRelay->expedition_num = $result->ExpeditionNum;
                 $selectedRelay->setTrackingUrl(
-                    Configuration::get(Mondialrelay::WEBSERVICE_ENSEIGNE),
-                    Configuration::get(Mondialrelay::WEBSERVICE_BRAND_CODE),
+                    Configuration::get(MondialRelay::WEBSERVICE_ENSEIGNE),
+                    Configuration::get(MondialRelay::WEBSERVICE_BRAND_CODE),
                     Configuration::get('PS_LANG_DEFAULT'),
-                    Configuration::get(Mondialrelay::WEBSERVICE_KEY)
+                    Configuration::get(MondialRelay::WEBSERVICE_KEY)
                 );
-                $selectedRelay->label_url = Mondialrelay::URL_DOMAIN . $result->URL_Etiquette;
+                $selectedRelay->label_url = MondialRelay::URL_DOMAIN . $result->URL_Etiquette;
                 $selectedRelay->date_label_generation = date('Y-m-d H:i:s');
                 $selectedRelay->save();
 
@@ -366,7 +373,7 @@ class GenerateLabelsActions extends DefaultActions
                 }
 
                 // Change order state
-                $newOrderStateId = (int) Configuration::get(Mondialrelay::OS_LABEL_GENERATED, null, null, $order->id_shop);
+                $newOrderStateId = (int) Configuration::get(MondialRelay::OS_LABEL_GENERATED, null, null, $order->id_shop);
                 if ($newOrderStateId) {
                     $employee = Context::getContext()->employee;
                     $orderHistory = new OrderHistory();
@@ -392,9 +399,10 @@ class GenerateLabelsActions extends DefaultActions
             }
 
             ProcessLoggerHandler::saveLogsInDb();
+
             return true;
         } catch (Exception $e) {
-            if (isset($service)) {
+            if ($service) {
                 $this->setErrorsFromService($this->conveyor['preparedData'], $service->getErrors());
             }
             $error = sprintf(
@@ -405,6 +413,7 @@ class GenerateLabelsActions extends DefaultActions
             ProcessLoggerHandler::logError($error);
             ProcessLoggerHandler::saveLogsInDb();
             $this->conveyor['errors'][] = $error;
+
             return false;
         }
     }
@@ -417,6 +426,7 @@ class GenerateLabelsActions extends DefaultActions
 
         if (empty($this->conveyor['updatedOrders'])) {
             $this->conveyor['errors'][] = $this->l('No updated orders to send emails.', 'GenerateLabelsActions');
+
             return false;
         }
 
@@ -493,7 +503,7 @@ class GenerateLabelsActions extends DefaultActions
                 continue;
             }
 
-            $subject = $this->l('Tracking your order', 'GenerateLabelsActions', (int) $order->id_lang) . ' - ' . $order->getUniqReference();
+            $subject = $this->l('Tracking your order', (int) $order->id_lang) . ' - ' . $order->getUniqReference();
             $deliveryAddress = new Address($order->id_address_delivery);
             $invoiceAddress = new Address($order->id_address_invoice);
             $customer = new Customer($order->id_customer);
@@ -514,7 +524,7 @@ class GenerateLabelsActions extends DefaultActions
                     'lastname' => '<span style="font-weight:bold;">%s</span>',
                 ]),
                 '{order_name}' => $order->getUniqReference(),
-                '{date}' => Tools::displayDate(date('Y-m-d H:i:s'), true, (int) $order->id_lang),
+                '{date}' => Tools::displayDate(date('Y-m-d H:i:s'), true),
                 '{carrier}' => $carrier->name,
                 '{payment}' => Tools::substr($order->payment, 0, 32),
                 '{mondialrelay_tracking_url}' => $selectedRelay->tracking_url,
@@ -547,7 +557,8 @@ class GenerateLabelsActions extends DefaultActions
 
     /**
      * Each order has its own data an errors set; so we need to assemble the two
-     * to create a common errors array
+     * to create a common errors array.
+     *
      * @param type $preparedData
      * @param type $serviceErrors
      */
@@ -573,18 +584,20 @@ class GenerateLabelsActions extends DefaultActions
         }
 
         foreach ($genericErrors as $error) {
-            ProcessLoggerHandler::logError($error, Order::class, $id_order);
+            ProcessLoggerHandler::logError($error, Order::class, $id_order ?? null);
             $this->conveyor['errors'][] = $error;
         }
     }
 
     /**
-     * Gets the webservice "ModeLiv" parameter's value
+     * Gets the webservice "ModeLiv" parameter's value.
      *
      * @param string $deliveryMode
+     *
      * @return string
      *
      * @author Pascal Fischer <contact@scaledev.fr>
+     *
      * @since 3.3.2
      */
     private function getWebserviceModeLiv($deliveryMode)

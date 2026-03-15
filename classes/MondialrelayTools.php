@@ -1,11 +1,14 @@
 <?php
-/**
- * NOTICE OF LICENSE
+/*
+ * This file is part of Simple Carrier module
  *
- * @author Mondial Relay <offrestart@mondialrelay.fr>
- * @copyright Copyright (c) Mondial Relay
- * @license http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * Copyright(c) Nicolas Roudaire  https://www.une-ruche-en-brie.fr/
+ * Licensed under the OSL version 3.0 license.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
+
 require_once _PS_MODULE_DIR_ . '/mondialrelay/classes/services/MondialrelayService.php';
 
 if (!defined('_PS_VERSION_')) {
@@ -15,17 +18,18 @@ if (!defined('_PS_VERSION_')) {
 /*
  * Some tools using used in the module
  */
-class MondialrelayTools
+class MondialRelayTools
 {
-    const REGEX_CLEAN_ADDR = '/[^a-zA-Z0-9-\s\'\!\,\|\(\)\.\*\&\#\/\:]/';
+    public const REGEX_CLEAN_ADDR = '/[^a-zA-Z0-9-\s\'\!\,\|\(\)\.\*\&\#\/\:]/';
 
-    const REGEX_CLEAN_PHONE = '/[^0-9+\(\)]*/';
+    public const REGEX_CLEAN_PHONE = '/[^0-9+\(\)]*/';
 
     /**
-     * Checks if a zipcode is valid according to its country
+     * Checks if a zipcode is valid according to its country.
      *
      * @param string $zipcode
      * @param string $iso_country
+     *
      * @return bool
      */
     public static function checkZipcodeByCountry($zipcode, $iso_country)
@@ -53,9 +57,10 @@ class MondialrelayTools
     }
 
     /**
-     * Formats a (french) phonenumber
+     * Formats a (french) phonenumber.
      *
      * @param string $phone_number
+     *
      * @return string
      */
     public static function getFormattedPhonenumber($phone_number)
@@ -76,17 +81,20 @@ class MondialrelayTools
     }
 
     /**
-     * Checks for SOAP and cURL availability
+     * Checks for SOAP and cURL availability.
+     *
      * @return bool
      */
     public static function checkDependencies()
     {
         $loadedExtensions = get_loaded_extensions();
+
         return in_array('curl', $loadedExtensions) && in_array('soap', $loadedExtensions);
     }
 
     /**
-     * Returns an array of hooks in which the module is not registered
+     * Returns an array of hooks in which the module is not registered.
+     *
      * @return array
      */
     public static function getModuleMissingHooks()
@@ -109,16 +117,16 @@ class MondialrelayTools
 
     /**
      * Checks that every required configuration field is filled for the current shop
-     * context
+     * context.
      */
     public static function checkWebserviceConfiguration()
     {
         $conf = Configuration::getMultiple([
-            Mondialrelay::WEBSERVICE_ENSEIGNE,
-            Mondialrelay::WEBSERVICE_BRAND_CODE,
-            Mondialrelay::WEBSERVICE_KEY,
-            Mondialrelay::WEIGHT_COEFF,
-            Mondialrelay::LABEL_LANG,
+            MondialRelay::WEBSERVICE_ENSEIGNE,
+            MondialRelay::WEBSERVICE_BRAND_CODE,
+            MondialRelay::WEBSERVICE_KEY,
+            MondialRelay::WEIGHT_COEFF,
+            MondialRelay::LABEL_LANG,
         ]);
 
         return count($conf) == count(array_filter($conf));
@@ -127,10 +135,10 @@ class MondialrelayTools
     public static function checkWebserviceConfigurationApi2()
     {
         $conf = Configuration::getMultiple([
-            Mondialrelay::API2_CULTURE,
-            Mondialrelay::API2_CUSTOMER_ID,
-            Mondialrelay::API2_LOGIN,
-            Mondialrelay::API2_PASSWORD,
+            MondialRelay::API2_CULTURE,
+            MondialRelay::API2_CUSTOMER_ID,
+            MondialRelay::API2_LOGIN,
+            MondialRelay::API2_PASSWORD,
         ]);
 
         return count($conf) == count(array_filter($conf));
@@ -138,9 +146,10 @@ class MondialrelayTools
 
     /**
      * Formats an array for a select list, by creating an array of array with
-     * the keys and values of the original array in 'label' and 'value' fields
+     * the keys and values of the original array in 'label' and 'value' fields.
      *
      * @param array $array
+     *
      * @return array
      */
     public static function formatArrayForSelect($array)
@@ -159,11 +168,12 @@ class MondialrelayTools
 
     /**
      * Checks the webservice connection with specific information, by trying to
-     * retrieve a relay list
+     * retrieve a relay list.
      *
      * @param string $enseigne
      * @param string $key
-     * @param string $errors an error array filled by the function
+     * @param string $errors   an error array filled by the function
+     *
      * @return bool
      */
     public static function checkWebserviceConnection($enseigne, $key, &$errors = [])
@@ -230,6 +240,7 @@ class MondialrelayTools
                         $errors[] = $error;
                     }
                 }
+
                 return false;
             }
 
@@ -240,6 +251,7 @@ class MondialrelayTools
                         $errors[] = $error;
                     }
                 }
+
                 return false;
             }
 
@@ -248,9 +260,8 @@ class MondialrelayTools
             $statCode = $result[0]->STAT;
             if ($statCode == 0) {
                 return true;
-            } else {
-                $errors[] = $service->getErrorFromStatCode($result[0]->STAT);
             }
+            $errors[] = $service->getErrorFromStatCode($result[0]->STAT);
         } catch (Exception $e) {
             $errors[] = $e->getMessage();
         }
@@ -263,6 +274,7 @@ class MondialrelayTools
      * validation function somewhere.
      *
      * @param string $brandCode
+     *
      * @return bool
      */
     public static function validateBrandCode($brandCode)
@@ -277,7 +289,7 @@ class MondialrelayTools
      * customization tables also have delivery addresses.
      *
      * @param Cart $cart
-     * @param int $id_address_delivery
+     * @param int  $id_address_delivery
      */
     public static function setCartDeliveryAddress($cart, $id_address_delivery)
     {
@@ -288,10 +300,11 @@ class MondialrelayTools
 
     /**
      * From an array of shop ids, returns only those where the module is
-     * enabled
+     * enabled.
      *
-     * @param int $id_module
+     * @param int   $id_module
      * @param array $id_shop_list
+     *
      * @return array
      */
     public static function getShopsWithModuleEnabled($id_module, $id_shop_list)
@@ -315,14 +328,16 @@ class MondialrelayTools
         foreach ($res as $row) {
             $return[] = $row['id_shop'];
         }
+
         return $return;
     }
 
     /**
      * Gets the language code by a post code and a country ISO code.
      *
-     * @param int $postCode The post code
+     * @param int    $postCode   The post code
      * @param string $countryIso The country ISO code
+     *
      * @return string The language code
      *
      * @since 3.0.13
@@ -353,9 +368,9 @@ class MondialrelayTools
             return 'NL';
         } elseif ($countryIso == 'FR') {
             return 'FR';
-        } else {
-            return 'EN';
         }
+
+        return 'EN';
     }
 
     public static function mbstring_binary_safe_encoding($reset = false)
@@ -388,7 +403,7 @@ class MondialrelayTools
         self::mbstring_binary_safe_encoding();
         $length = strlen($str);
         self::mbstring_binary_safe_encoding(true);
-        for ($i = 0; $i < $length; ++$i) {
+        for ($i = 0; $i < $length; $i++) {
             $c = ord($str[$i]);
             if ($c < 0x80) {
                 $n = 0;
@@ -418,13 +433,14 @@ class MondialrelayTools
                 return false;
             }
             // Does not match any model
-            for ($j = 0; $j < $n; ++$j) {
+            for ($j = 0; $j < $n; $j++) {
                 // n bytes matching 10bbbbbb follow ?
                 if ((++$i == $length) || ((ord($str[$i]) & 0xC0) != 0x80)) {
                     return false;
                 }
             }
         }
+
         return true;
     }
 

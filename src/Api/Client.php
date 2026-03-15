@@ -1,25 +1,12 @@
 <?php
-/**
- * NOTICE OF LICENSE
+/*
+ * This file is part of Simple Carrier module
  *
- * This source file is subject to a commercial license from ScaleDEV.
- * Use, copy, modification or distribution of this source file without written
- * license agreement from ScaleDEV is strictly forbidden.
- * In order to obtain a license, please contact us: contact@scaledev.fr
- * ...........................................................................
- * INFORMATION SUR LA LICENCE D'UTILISATION
+ * Copyright(c) Nicolas Roudaire  https://www.une-ruche-en-brie.fr/
+ * Licensed under the OSL version 3.0 license.
  *
- * L'utilisation de ce fichier source est soumise à une licence commerciale
- * concédée par la société ScaleDEV.
- * Toute utilisation, reproduction, modification ou distribution du présent
- * fichier source sans contrat de licence écrit de la part de ScaleDEV est
- * expressément interdite.
- * Pour obtenir une licence, veuillez nous contacter : contact@scaledev.fr
- * ...........................................................................
- * @author ScaleDEV <contact@scaledev.fr>
- * @copyright Copyright (c) ScaleDEV - 12 RUE CHARLES MORET - 10120 SAINT-ANDRE-LES-VERGERS - FRANCE
- * @license Commercial license
- * Support: support@scaledev.fr
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace MondialRelay\MondialRelay\Api;
@@ -29,14 +16,14 @@ if (!defined('_PS_VERSION_')) {
 }
 
 /**
- * Class Client
+ * Class Client.
  *
  * @author Fabien Sigrand <contact@scaledev.fr>
  */
 class Client
 {
-    const METHOD_GET = 'GET';
-    const METHOD_POST = 'POST';
+    public const METHOD_GET = 'GET';
+    public const METHOD_POST = 'POST';
 
     /** @var resource */
     private $curl;
@@ -63,11 +50,11 @@ class Client
     private $headersList = [];
 
     /**
-     * Set client base connection property
+     * Set client base connection property.
      */
     public function __construct()
     {
-        $this->login = \Configuration::get(\Mondialrelay::API2_LOGIN);
+        $this->login = \Configuration::get(\MondialRelay::API2_LOGIN);
         $this->password = \Configuration::get(\MondialRelay::API2_PASSWORD);
         $this->customerId = \Configuration::get(\MondialRelay::API2_CUSTOMER_ID);
         $this->culture = \Configuration::get(\MondialRelay::API2_CULTURE);
@@ -78,6 +65,7 @@ class Client
      *
      * @param string $url
      * @param string $method 'GET' or 'POST'
+     *
      * @return $this
      */
     public function init($url, $method = self::METHOD_GET)
@@ -152,6 +140,7 @@ class Client
      * Sets the URL to use by the client.
      *
      * @param string $url
+     *
      * @return $this
      */
     public function setUrl($url)
@@ -162,7 +151,6 @@ class Client
     /**
      * Sets the post fields list to send.
      *
-     * @param mixed $postFieldsList
      * @return $this
      */
     public function setPostFieldsList($postFieldsList)
@@ -174,7 +162,7 @@ class Client
      * Sets an option to the client.
      *
      * @param string $optionKey
-     * @param mixed $optionValue
+     *
      * @return $this
      */
     public function setOption($optionKey, $optionValue)
@@ -187,7 +175,6 @@ class Client
     /**
      * Sets the options list to the client.
      *
-     * @param array $optionsList
      * @return $this
      */
     public function setOptionsList(array $optionsList)
@@ -223,6 +210,7 @@ class Client
      * Sets the "User-Agent" header.
      *
      * @param string $userAgent
+     *
      * @return $this
      */
     public function setUserAgent($userAgent)
@@ -246,7 +234,6 @@ class Client
     /**
      * Sets the headers list.
      *
-     * @param array $headersList
      * @return $this
      */
     public function setHeadersList(array $headersList)
@@ -259,7 +246,7 @@ class Client
     }
 
     /**
-     * Get the value of culture
+     * Get the value of culture.
      */
     public function getCulture()
     {
@@ -267,18 +254,19 @@ class Client
     }
 
     /**
-     * Set the value of culture
+     * Set the value of culture.
      *
      * @return self
      */
     public function setCulture($culture)
     {
         $this->culture = $culture;
+
         return $this;
     }
 
     /**
-     * Get the value of customerId
+     * Get the value of customerId.
      */
     public function getCustomerId()
     {
@@ -286,7 +274,7 @@ class Client
     }
 
     /**
-     * Set the value of customerId
+     * Set the value of customerId.
      *
      * @return self
      */
@@ -298,7 +286,7 @@ class Client
     }
 
     /**
-     * Get the value of password
+     * Get the value of password.
      */
     public function getPassword()
     {
@@ -306,7 +294,7 @@ class Client
     }
 
     /**
-     * Set the value of password
+     * Set the value of password.
      *
      * @return self
      */
@@ -318,7 +306,7 @@ class Client
     }
 
     /**
-     * Get the value of login
+     * Get the value of login.
      */
     public function getLogin()
     {
@@ -326,7 +314,7 @@ class Client
     }
 
     /**
-     * Set the value of login
+     * Set the value of login.
      *
      * @return self
      */

@@ -315,7 +315,7 @@ class MondialRelay extends Module
      */
     public function install()
     {
-        if (!MondialrelayTools::checkDependencies()) {
+        if (!MondialRelayTools::checkDependencies()) {
             throw new Exception($this->l('SOAP and cURL should be installed on your server.'));
         }
 
@@ -522,8 +522,6 @@ class MondialRelay extends Module
      * @see self::hookDisplayBeforeCarrier()
      *
      * @param type $params
-     *
-     * @return string
      */
     public function hookActionFrontControllerSetMedia($params)
     {
@@ -657,13 +655,11 @@ class MondialRelay extends Module
      * delivery option changes, unless stopped (see checkout-17.js).
      *
      * @param array $params
-     *
-     * @return string
      */
     public function hookDisplayAfterCarrier($params)
     {
         if (version_compare(_PS_VERSION_, '1.7', '<')) {
-            return $this->hookDisplayCarrierList($params);
+            $this->hookDisplayCarrierList($params);
         }
     }
 
@@ -673,8 +669,6 @@ class MondialRelay extends Module
      * @see self::hookActionFrontControllerSetMedia()
      *
      * @param array $params
-     *
-     * @return string
      */
     public function hookDisplayBeforeCarrier($params)
     {

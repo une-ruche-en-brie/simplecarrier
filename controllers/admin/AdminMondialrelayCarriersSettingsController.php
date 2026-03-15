@@ -1,11 +1,14 @@
 <?php
-/**
- * NOTICE OF LICENSE
+/*
+ * This file is part of Simple Carrier module
  *
- * @author Mondial Relay <offrestart@mondialrelay.fr>
- * @copyright Copyright (c) Mondial Relay
- * @license http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
+ * Copyright(c) Nicolas Roudaire  https://www.une-ruche-en-brie.fr/
+ * Licensed under the OSL version 3.0 license.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
+
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -95,7 +98,7 @@ class AdminMondialrelayCarriersSettingsController extends AdminMondialrelayContr
     public function renderList()
     {
         // Render form before list
-        $helper = new HelperForm($this);
+        $helper = new HelperForm();
         $this->setHelperDisplay($helper);
         $helper->fields_value = ['name' => '', 'delivery_mode' => '', 'delivery_type' => '', 'insurance_level' => '', 'delay' => $this->module->l('Period of 3 to 5 days from the package being made available.', 'AdminMondialrelayCarriersSettingsController')];
 
@@ -105,6 +108,7 @@ class AdminMondialrelayCarriersSettingsController extends AdminMondialrelayContr
         $list = parent::renderList();
         if (!empty($this->_list)) {
             $this->content .= $list;
+
             return;
         }
 
@@ -115,6 +119,8 @@ class AdminMondialrelayCarriersSettingsController extends AdminMondialrelayContr
             'message' => $this->module->l('No shipping methods available. Please create a new carrier using the form above.', 'AdminMondialrelayCarriersSettingsController'),
         ]);
         $this->content .= $tpl->fetch();
+
+        return '';
     }
 
     public function setHelperDisplay(Helper $helper)
@@ -164,7 +170,7 @@ class AdminMondialrelayCarriersSettingsController extends AdminMondialrelayContr
                         'options' => [
                             'id' => 'value',
                             'name' => 'label',
-                            'query' => MondialrelayTools::formatArrayForSelect($this->deliveryModesList),
+                            'query' => MondialRelayTools::formatArrayForSelect($this->deliveryModesList),
                         ],
                         'hint' => $this->module->l('Please consult the details of your offer to find informations about your delivery mode options.', 'AdminMondialrelayCarriersSettingsController'),
                         'required' => true,
@@ -177,7 +183,7 @@ class AdminMondialrelayCarriersSettingsController extends AdminMondialrelayContr
                         'options' => [
                             'id' => 'value',
                             'name' => 'label',
-                            'query' => MondialrelayTools::formatArrayForSelect($this->deliveryTypesList),
+                            'query' => MondialRelayTools::formatArrayForSelect($this->deliveryTypesList),
                         ],
                         'hint' => $this->module->l('Please select the area where the carrier will be suggested', 'AdminMondialrelayCarriersSettingsController'),
                         'required' => true,
@@ -190,7 +196,7 @@ class AdminMondialrelayCarriersSettingsController extends AdminMondialrelayContr
                         'options' => [
                             'id' => 'value',
                             'name' => 'label',
-                            'query' => MondialrelayTools::formatArrayForSelect($this->insuranceLevelsList),
+                            'query' => MondialRelayTools::formatArrayForSelect($this->insuranceLevelsList),
                         ],
                         'hint' => $this->module->l('Please consult the details of your offer to find informations about your insurance options.', 'AdminMondialrelayCarriersSettingsController'),
                         'required' => true,
@@ -216,7 +222,7 @@ class AdminMondialrelayCarriersSettingsController extends AdminMondialrelayContr
     }
 
     /**
-     * Add new shipping method
+     * Add new shipping method.
      *
      * @return bool
      */
@@ -246,7 +252,7 @@ class AdminMondialrelayCarriersSettingsController extends AdminMondialrelayContr
             'delivery_mode' => Tools::getValue('delivery_mode'),
             'delivery_type' => Tools::getValue('delivery_type'),
             'insurance_level' => Tools::getValue('insurance_level'),
-            'weight_coeff' => Configuration::get(Mondialrelay::WEIGHT_COEFF),
+            'weight_coeff' => Configuration::get(MondialRelay::WEIGHT_COEFF),
         ])->addActions(
             'addNativeCarrier',
             'addMondialRelayCarrierMethod',
@@ -285,6 +291,7 @@ class AdminMondialrelayCarriersSettingsController extends AdminMondialrelayContr
             if (!empty($actionsResult['errors'])) {
                 $this->errors = array_merge($this->errors, $actionsResult['errors']);
             }
+
             return false;
         }
 
@@ -318,8 +325,9 @@ class AdminMondialrelayCarriersSettingsController extends AdminMondialrelayContr
      * Most of this code is from AdminCarriers
      *
      * @param string $token
-     * @param int $id
+     * @param int    $id
      * @param string $name
+     *
      * @return string
      */
     public function displayEditLink($token, $id, $name)
@@ -348,7 +356,7 @@ class AdminMondialrelayCarriersSettingsController extends AdminMondialrelayContr
      * Most of this code is from AdminCarriers
      *
      * @param string $token
-     * @param int $id
+     * @param int    $id
      * @param string $name
      *
      * @return string
